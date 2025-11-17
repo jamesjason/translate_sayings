@@ -10,7 +10,7 @@ class CreateLanguages < ActiveRecord::Migration[8.1]
     add_index :languages, :code, unique: true
 
     add_check_constraint :languages,
-      "code ~ '^[a-z]+$'",
-      name: "languages_code_lowercase_no_spaces"
+                         "code ~ '^[a-z]+$'",
+                         name: 'languages_code_lowercase_no_spaces'
   end
 end

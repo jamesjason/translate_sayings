@@ -1,7 +1,7 @@
 class Language < ApplicationRecord
   SUPPORTED_LANGUAGES = {
-    "en" => "English",
-    "fa" => "Farsi"
+    'en' => 'English',
+    'fa' => 'Farsi'
   }.freeze
 
   before_validation :normalize_code
@@ -13,6 +13,6 @@ class Language < ApplicationRecord
   def normalize_code
     return if code.blank?
 
-    self.code = code.to_s.strip.downcase.gsub(/\s+/, "")
+    self.code = code.to_s.strip.downcase.gsub(/\s+/, '')
   end
 end

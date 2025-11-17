@@ -5,7 +5,6 @@ class Saying < ApplicationRecord
 
   before_validation :normalize_text
 
-  validates :language, presence: true
   validates :text,
             presence: true,
             length: { minimum: MINIMUM_TEXT_LENGTH },
@@ -17,7 +16,7 @@ class Saying < ApplicationRecord
     return if text.blank?
 
     normalized = text.downcase.strip
-    normalized = normalized.gsub(/\s+/, " ")
+    normalized = normalized.gsub(/\s+/, ' ')
 
     self.text = normalized
   end

@@ -11,7 +11,7 @@ RSpec.describe Language, type: :model do
 
     it do
       expect(subject).to validate_inclusion_of(:code)
-        .in_array(Language::SUPPORTED_LANGUAGES.keys)
+        .in_array(Language::SUPPORTED_LANGUAGES)
     end
   end
 

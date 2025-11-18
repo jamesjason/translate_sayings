@@ -43,6 +43,9 @@ group :development, :test do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'bullet'
+  gem 'csv'
+  gem 'nokogiri'
+  gem 'openai'
   gem 'pry-rails'
   gem 'rack-mini-profiler'
 end

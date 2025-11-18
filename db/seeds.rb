@@ -2,8 +2,8 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-Language::SUPPORTED_LANGUAGES.each do |code, name|
+Language::SUPPORTED_LANGUAGES.each do |code|
   Language.find_or_create_by!(code:) do |language|
-    language.name = name
+    language.name = Language.name_for(code:)
   end
 end

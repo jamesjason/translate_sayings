@@ -76,3 +76,6 @@ RSpec/ContextWording:
 
 RSpec/NamedSubject:
   Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false

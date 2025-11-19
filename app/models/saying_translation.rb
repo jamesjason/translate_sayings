@@ -1,6 +1,10 @@
 class SayingTranslation < ApplicationRecord
-  belongs_to :saying_a, class_name: 'Saying'
-  belongs_to :saying_b, class_name: 'Saying'
+  belongs_to :saying_a,
+             class_name: 'Saying',
+             inverse_of: :outgoing_translations
+  belongs_to :saying_b,
+             class_name: 'Saying',
+             inverse_of: :incoming_translations
 
   validate :saying_a_and_saying_b_must_be_different
   validate :unique_translation_pair

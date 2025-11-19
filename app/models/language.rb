@@ -1,7 +1,7 @@
 class Language < ApplicationRecord
   LANGUAGE_CODE_TO_NAME_MAP = {
     'en' => 'English',
-    'fa' => 'Farsi'
+    'fa' => 'Persian'
   }.freeze
   SUPPORTED_LANGUAGES = LANGUAGE_CODE_TO_NAME_MAP.keys.freeze
 

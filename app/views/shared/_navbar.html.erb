@@ -1,0 +1,67 @@
+<header class="relative z-40 border-b border-slate-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3">
+      <%= link_to root_path, class: "flex items-center gap-3" do %>
+        <%= image_tag "logo.png",
+              alt: "Translate Sayings logo",
+              class: "h-12 w-12 object-contain sm:h-14 sm:w-14" %>
+
+        <div class="mb-2 flex flex-col leading-snug">
+          <span class="text-[13px] font-semibold tracking-tight text-slate-900 sm:text-base">
+            Translate Sayings
+          </span>
+          <span class="text-[10px] text-slate-500 sm:text-[12px]">
+            Find equivalent sayings across languages
+          </span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <nav class="hidden items-center gap-6 text-xs sm:flex sm:text-sm" aria-label="Main navigation">
+        <%= link_to "Home",
+                    root_path,
+                    class: "text-slate-600 transition-colors hover:text-slate-900" %>
+
+        <%= link_to "About",
+                    root_path,
+                    class: "text-slate-600 transition-colors hover:text-slate-900" %>
+
+        <%= link_to "Contribute",
+                    "#",
+                    class: "text-slate-600 transition-colors hover:text-slate-900" %>
+
+        <%= link_to "Log in",
+                    "#",
+                    class: "rounded-full border border-slate-200 px-3 py-1 text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50" %>
+      </nav>
+
+      <details class="relative sm:hidden">
+        <summary class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:bg-slate-50">
+          <span class="sr-only">Open navigation menu</span>
+          <svg class="h-6 w-6 text-slate-700" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </summary>
+
+        <div class="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1.5 text-sm shadow-lg">
+          <%= link_to "Home",
+                      root_path,
+                      class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
+
+          <%= link_to "About",
+                      root_path,
+                      class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
+
+          <%= link_to "Contribute",
+                      "#",
+                      class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
+
+          <%= link_to "Log in",
+                      "#",
+                      class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

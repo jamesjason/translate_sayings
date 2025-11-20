@@ -77,5 +77,5 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   # matches any *.ngrok-free.app domain
-  config.hosts << /\A[a-z0-9\-]+\.ngrok-free\.app\z/
+  config.hosts << /\A[a-z0-9-]+\.ngrok-free\.app\z/
 end

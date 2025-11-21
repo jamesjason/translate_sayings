@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_20_160152) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_20_171415) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -43,6 +43,23 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_160152) do
     t.index "lower(text)", name: "index_sayings_on_lower_text_unique", unique: true
     t.index ["language_id"], name: "index_sayings_on_language_id"
     t.index ["text"], name: "index_sayings_on_text_gin_trgm", opclass: :gin_trgm_ops, using: :gin
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "name"
+    t.string "provider"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.string "role", default: "user", null: false
+    t.string "uid"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "saying_translations", "sayings", column: "saying_a_id"

@@ -1,0 +1,21 @@
+<% if resource.errors.any? %>
+  <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+    <div class="flex items-start gap-2">
+      <svg class="h-5 w-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5.07 19h13.86c1.52 0 2.47-1.64 1.7-2.96L13.7 4.96c-.76-1.32-2.65-1.32-3.42 0L3.37 16.04c-.76 1.32.18 2.96 1.7 2.96z"/>
+      </svg>
+
+      <div>
+        <p class="font-medium mb-1">
+          Please fix the following <%= pluralize(resource.errors.count, "error") %>:
+        </p>
+
+        <ul class="list-disc list-inside space-y-0.5">
+          <% resource.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

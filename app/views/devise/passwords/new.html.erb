@@ -31,12 +31,13 @@
 
         <div class="pt-1">
           <%= f.submit "Send reset instructions",
-                data: { disable_with: "Sending…" },
+                data: { turbo_submits_with: "Sending…" },
                 class: "w-full inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium
                         text-white shadow-sm cursor-pointer hover:brightness-95 hover:shadow-md
                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20
-                        focus-visible:ring-offset-2 focus-visible:ring-offset-white transition",
-                style: "background: var(--gm-fillbutton-container-color,rgb(26,115,232));" %>
+                        focus-visible:ring-offset-2 focus-visible:ring-offset-white transition
+                        bg-[rgb(26,115,232)]
+                        disabled:bg-slate-400 disabled:text-white disabled:shadow-none disabled:cursor-not-allowed" %>
         </div>
       </div>
     <% end %>

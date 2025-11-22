@@ -12,7 +12,6 @@
     <%= form_with \
           url: translations_path,
           method: :get,
-          local: true,
           class: "space-y-5",
           data: {
             controller: "autocomplete",
@@ -188,11 +187,13 @@
       <div class="w-full flex justify-end items-center gap-3 pt-1">
         <button
           type="submit"
+          data-turbo-submits-with="Translate"
           class="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm
                  hover:brightness-90 hover:shadow-md
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white
-                 cursor-pointer"
-          style="background: var(--gm-fillbutton-container-color,rgb(26,115,232));"
+                 cursor-pointer
+                 bg-[rgb(26,115,232)]
+                 disabled:bg-slate-400 disabled:text-white disabled:shadow-none disabled:cursor-not-allowed"
         >
           Translate
         </button>

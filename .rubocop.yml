@@ -12,6 +12,9 @@ AllCops:
     - 'node_modules/**/*'
     - 'vendor/**/*'
 
+Rails/StrongParametersExpect:
+  Enabled: false
+
 Layout/LineLength:
   Enabled: true
   Max: 120

@@ -1,4 +1,5 @@
 <div class="mx-auto w-full max-w-3xl">
+
   <div class="mb-6 sm:mb-8">
     <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
       Translate sayings
@@ -12,146 +13,21 @@
     <%= form_with \
           url: translations_path,
           method: :get,
-          class: "space-y-5",
-          data: {
-            controller: "autocomplete",
-            autocomplete_source_language_value: @source_language.code,
-            autocomplete_url_value: autocomplete_sayings_path
-          } do %>
+          class: "space-y-5" do %>
 
-      <div
-        class="space-y-3 sm:flex sm:items-end sm:gap-4 sm:space-y-0"
-        data-controller="language-swap"
-      >
-        <%= hidden_field_tag :source_language,
-                             @source_language.code,
-                             data: {
-                               language_swap_target: "sourceInput",
-                               action: "change->autocomplete#setSourceLanguage"
-                             } %>
+      <%= render "shared/language_selector",
+            source_language: @source_language,
+            target_language: @target_language,
+            source_field: :source_language,
+            target_field: :target_language %>
 
-        <%= hidden_field_tag :target_language,
-                             @target_language.code,
-                             data: {
-                               language_swap_target: "targetInput"
-                             } %>
+      <div class="relative"
+           data-controller="autocomplete"
+           data-autocomplete-submit-on-select-value="true"
+           data-autocomplete-source-language-value="<%= @source_language.code %>"
+           data-autocomplete-url-value="<%= autocomplete_sayings_path %>"
+           data-autocomplete-language-changed-event-value="ts:source-language-changed">
 
-        <div class="relative order-1 sm:flex-1">
-          <label class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700">
-            From
-          </label>
-
-          <button
-            type="button"
-            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-sm shadow-sm
-                   hover:border-slate-300 text-slate-900
-                   focus:outline-none focus:ring-1 focus:ring-sky-500/20 focus:border-sky-500"
-            data-language-swap-target="sourceLabel"
-            data-action="click->language-swap#toggleSourceMenu"
-          >
-            <span class="truncate"><%= @source_language.name %></span>
-            <span class="ml-2 text-slate-400">
-              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
-          </button>
-
-          <div
-            class="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white text-sm shadow-lg hidden"
-            data-language-swap-target="sourceMenu"
-          >
-            <% Language::LANGUAGE_CODE_TO_NAME_MAP.sort_by { |_code, name| name }.each do |code, name| %>
-              <button
-                type="button"
-                class="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left hover:bg-slate-50 <%= 'bg-slate-50' if code == @source_language.code %>"
-                data-action="click->language-swap#chooseSource"
-                data-code="<%= code %>"
-                data-name="<%= name %>"
-              >
-                <span class="truncate"><%= name %></span>
-                <span
-                  class="text-slate-400 <%= code == @source_language.code ? '' : 'hidden' %>"
-                  data-role="check"
-                >
-                  ✓
-                </span>
-              </button>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="order-3 sm:order-2 sm:self-end">
-          <button
-            type="button"
-            class="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm
-                   hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800
-                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white
-                   cursor-pointer
-                   sm:h-9 sm:w-9 sm:gap-0 sm:rounded-full sm:px-0 sm:text-sm"
-            title="Swap languages"
-            data-action="language-swap#swap"
-          >
-            <span class="sm:hidden">Swap</span>
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M7 7h11M7 7l3-3M7 7l3 3M17 17H6M17 17l-3-3M17 17l-3 3"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div class="relative order-2 sm:order-3 sm:flex-1">
-          <label class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700">
-            To
-          </label>
-
-          <button
-            type="button"
-            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-sm shadow-sm
-                   hover:border-slate-300 text-slate-900
-                   focus:outline-none focus:ring-1 focus:ring-sky-500/20 focus:border-sky-500"
-            data-language-swap-target="targetLabel"
-            data-action="click->language-swap#toggleTargetMenu"
-          >
-            <span class="truncate"><%= @target_language.name %></span>
-            <span class="ml-2 text-slate-400">
-              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
-          </button>
-
-          <div
-            class="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white text-sm shadow-lg hidden"
-            data-language-swap-target="targetMenu"
-          >
-            <% Language::LANGUAGE_CODE_TO_NAME_MAP.sort_by { |_code, name| name }.each do |code, name| %>
-              <button
-                type="button"
-                class="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left hover:bg-slate-50 <%= 'bg-slate-50' if code == @target_language.code %>"
-                data-action="click->language-swap#chooseTarget"
-                data-code="<%= code %>"
-                data-name="<%= name %>"
-              >
-                <span class="truncate"><%= name %></span>
-                <span
-                  class="text-slate-400 <%= code == @target_language.code ? '' : 'hidden' %>"
-                  data-role="check"
-                >
-                  ✓
-                </span>
-              </button>
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <div class="relative">
         <label class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700">
           Saying
         </label>
@@ -162,47 +38,57 @@
           name="q"
           value="<%= @query %>"
           autocomplete="off"
-          placeholder="Type a saying…"
+          required
+          minlength="3"
+          maxlength="200"
+          placeholder="Type a saying in <%= @source_language.name %>…"
           dir="auto"
           role="combobox"
           aria-autocomplete="list"
           aria-expanded="false"
-          aria-owns="translation_suggestions"
+          aria-controls="translation_suggestions"
           class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[16px] sm:text-sm text-slate-900 shadow-sm
-                 placeholder:text-slate-400
-                 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500/20"
+                 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-sky-500/20"
           data-autocomplete-target="input"
           data-action="input->autocomplete#search keydown->autocomplete#handleKeydown"
         />
 
         <ul
           id="translation_suggestions"
-          class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white text-sm shadow-lg break-words"
+          aria-label="Suggestions"
+          class="
+            absolute z-30 mt-1 w-full
+            rounded-xl border border-slate-200 bg-white
+            shadow-lg ring-1 ring-black/5
+            text-sm text-slate-900
+            overflow-hidden
+            dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
+            max-h-64 overflow-y-auto
+          "
           data-autocomplete-target="list"
           role="listbox"
           hidden
         ></ul>
       </div>
 
-      <div class="w-full flex justify-end items-center gap-3 pt-1">
+      <div class="flex w-full items-center justify-end gap-3 pt-1">
         <button
           type="submit"
           data-turbo-submits-with="Translate"
-          class="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm
-                 hover:brightness-90 hover:shadow-md
-                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white
-                 cursor-pointer
-                 bg-[rgb(26,115,232)]
-                 disabled:bg-slate-400 disabled:text-white disabled:shadow-none disabled:cursor-not-allowed"
+          class="inline-flex items-center gap-1.5 rounded-full bg-[rgb(26,115,232)] px-4 py-2 text-sm font-medium text-white shadow-sm
+                 hover:brightness-90 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20
+                 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:bg-slate-400
+                 disabled:text-white disabled:shadow-none"
         >
           Translate
         </button>
       </div>
+
     <% end %>
   </div>
 
   <% if @source_saying.present? %>
-    <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-live="polite">
       <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 class="min-w-0 text-sm font-semibold text-slate-800">
           Equivalent sayings in <%= @target_language.name %>
@@ -212,23 +98,27 @@
         </p>
       </div>
 
-      <% if @equivalents.any? %>
+      <% if @equivalent_sayings.any? %>
         <ul class="mt-3 space-y-1.5 text-sm leading-relaxed text-slate-900">
-          <% @equivalents.each do |eq| %>
-            <li class="rounded-lg bg-slate-50 px-3 py-1.5 break-words" dir="auto">
-              <%= eq.text %>
+          <% @equivalent_sayings.each do |saying| %>
+            <li class="rounded-lg bg-slate-50 px-3 py-1.5 wrap-break-word" dir="auto">
+              <%= saying.text %>
             </li>
           <% end %>
         </ul>
       <% else %>
         <p class="mt-3 text-sm text-slate-600">
-          No equivalents found yet for this saying.
+          No equivalent sayings found.
         </p>
       <% end %>
     </section>
+
   <% elsif @query.present? %>
-    <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm break-words">
-      No saying found matching “<%= @query %>”.
-    </div>
+    <section aria-live="polite">
+      <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm wrap-break-word">
+        No saying found matching “<%= @query %>”.
+      </div>
+    </section>
   <% end %>
+
 </div>

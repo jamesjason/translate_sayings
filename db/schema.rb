@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_20_171415) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_23_185527) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -45,6 +45,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_171415) do
     t.index ["text"], name: "index_sayings_on_text_gin_trgm", opclass: :gin_trgm_ops, using: :gin
   end
 
+  create_table "suggested_translations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "source_language_id", null: false
+    t.text "source_saying_text", null: false
+    t.string "status", default: "pending_review", null: false
+    t.bigint "target_language_id", null: false
+    t.text "target_saying_text", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["source_language_id"], name: "index_suggested_translations_on_source_language_id"
+    t.index ["target_language_id"], name: "index_suggested_translations_on_target_language_id"
+    t.index ["user_id"], name: "index_suggested_translations_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -65,4 +79,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_171415) do
   add_foreign_key "saying_translations", "sayings", column: "saying_a_id"
   add_foreign_key "saying_translations", "sayings", column: "saying_b_id"
   add_foreign_key "sayings", "languages"
+  add_foreign_key "suggested_translations", "languages", column: "source_language_id"
+  add_foreign_key "suggested_translations", "languages", column: "target_language_id"
+  add_foreign_key "suggested_translations", "users"
 end

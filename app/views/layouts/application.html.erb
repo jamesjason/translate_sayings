@@ -39,4 +39,8 @@
       <%= render "shared/footer" %>
     </div>
   </body>
+
+  <script>
+    window.LANGUAGE_CODE_TO_NAME_MAP = <%= Language::LANGUAGE_CODE_TO_NAME_MAP.to_json.html_safe %>;
+  </script>
 </html>

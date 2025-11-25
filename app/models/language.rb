@@ -4,6 +4,8 @@ class Language < ApplicationRecord
     'fa' => 'Persian'
   }.freeze
   SUPPORTED_LANGUAGES = LANGUAGE_CODE_TO_NAME_MAP.keys.freeze
+  DEFAULT_SOURCE_LANGUAGE = 'en'.freeze
+  DEFAULT_TARGET_LANGUAGE = 'fa'.freeze
 
   before_validation :normalize_code
 

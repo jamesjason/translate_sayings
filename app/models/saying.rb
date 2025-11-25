@@ -1,7 +1,11 @@
 class Saying < ApplicationRecord
+  include TextNormalizer
+
   MINIMUM_TEXT_LENGTH = 3
+  MAXIMUM_TEXT_LENGTH = 200
 
   belongs_to :language
+
   has_many :outgoing_translations,
            class_name: 'SayingTranslation',
            foreign_key: :saying_a_id,
@@ -18,7 +22,10 @@ class Saying < ApplicationRecord
 
   validates :text,
             presence: true,
-            length: { minimum: MINIMUM_TEXT_LENGTH },
+            length: {
+              minimum: MINIMUM_TEXT_LENGTH,
+              maximum: MAXIMUM_TEXT_LENGTH
+            },
             uniqueness: { case_sensitive: false }
 
   def self.search(language:, term:)
@@ -45,7 +52,7 @@ class Saying < ApplicationRecord
   def normalize_text
     return if text.blank?
 
-    self.text = text.downcase.strip.gsub(/\s+/, ' ')
+    self.text = normalize_text_field(text)
   end
 
   def linked_sayings

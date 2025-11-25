@@ -18,7 +18,7 @@ class SayingsController < ApplicationController
     return @source_language if defined?(@source_language)
 
     @source_language = Language.find_by(
-      code: autocomplete_params[:source_language].to_s.downcase.presence || 'en'
+      code: autocomplete_params[:source_language].to_s.downcase.presence || Language::DEFAULT_SOURCE_LANGUAGE
     )
   end
 end

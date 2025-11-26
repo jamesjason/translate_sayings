@@ -1,0 +1,217 @@
+<div class="mx-auto w-full max-w-3xl">
+
+  <%= render "shared/authentication_prompt" unless user_signed_in? %>
+
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+      Contribute to Translate Sayings
+    </h1>
+    <p class="mt-2 text-sm text-slate-600 sm:text-base">
+      There are two ways you can contribute and help improve the collection.
+    </p>
+  </div>
+
+  <div
+    class="relative"
+    data-controller="overlay"
+    data-overlay-active-value="<%= flash[:inline_flash] ? 'true' : 'false' %>"
+  >
+
+    <!-- Success Overlay -->
+    <div
+      data-overlay-target="panel"
+      class="absolute inset-0 z-20 hidden flex items-center justify-center rounded-2xl bg-white/40 backdrop-blur-md transition-opacity duration-300"
+    >
+      <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 shadow-xl">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path
+              d="M5 13l4 4L19 7"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-emerald-600">Translation added!</h3>
+          <p class="text-sm text-slate-600">
+            <span class="font-semibold text-slate-700">Status:</span>
+            <span class="text-amber-600 font-medium">Awaiting Review</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Translation -->
+    <div class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6">
+
+      <div class="mb-6 flex items-start gap-3">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+            <path d="M12 6v12M6 12h12"
+                  stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-semibold text-slate-900">1) Add a New Translation</h2>
+          <p class="mt-1 text-sm text-slate-600">
+            Add a new pair of equivalent sayings by completing the form below.
+          </p>
+        </div>
+      </div>
+
+      <%= render "devise/shared/error_messages", resource: @suggested_translation %>
+
+      <%= form_with model: @suggested_translation,
+                    url: suggested_translations_path,
+                    class: "space-y-5" do |f| %>
+
+        <%= render "shared/language_selector",
+              source_language: @suggested_translation.source_language,
+              target_language: @suggested_translation.target_language,
+              source_field: "suggested_translation[source_language_code]",
+              target_field: "suggested_translation[target_language_code]" %>
+
+        <!-- SOURCE FIELD -->
+        <div
+          class="relative"
+          data-controller="autocomplete"
+          data-autocomplete-url-value="<%= autocomplete_sayings_path %>"
+          data-autocomplete-submit-on-select-value="false"
+          data-autocomplete-source-language-value="<%= @suggested_translation.source_language.code %>"
+          data-autocomplete-language-changed-event-value="ts:source-language-changed"
+        >
+          <label
+            class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700"
+            data-autocomplete-target="label"
+          >
+            <%= @suggested_translation.source_language.name %> Saying
+          </label>
+
+          <%= f.text_field :source_saying_text,
+                required: true,
+                minlength: Saying::MINIMUM_TEXT_LENGTH,
+                maxlength: Saying::MAXIMUM_TEXT_LENGTH,
+                autocomplete: "off",
+                placeholder: "Type a saying in #{@suggested_translation.source_language.name}…",
+                dir: "auto",
+                class: "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[16px] sm:text-sm text-slate-900 shadow-sm
+                       placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none
+                       focus:ring-1 focus:ring-sky-500/20",
+                data: {
+                  autocomplete_target: "input",
+                  action: "input->autocomplete#search keydown->autocomplete#handleKeydown"
+                } %>
+
+          <ul
+            id="source_suggestions"
+            aria-label="Source suggestions"
+            class="
+              absolute z-30 mt-1 w-full
+              rounded-xl border border-slate-200 bg-white
+              shadow-lg ring-1 ring-black/5
+              text-sm text-slate-900
+              overflow-hidden
+              dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
+              max-h-64 overflow-y-auto
+            "
+            data-autocomplete-target="list"
+            role="listbox"
+            hidden
+          ></ul>
+        </div>
+
+        <!-- TARGET FIELD -->
+        <div
+          class="relative"
+          data-controller="autocomplete"
+          data-autocomplete-url-value="<%= autocomplete_sayings_path %>"
+          data-autocomplete-submit-on-select-value="false"
+          data-autocomplete-source-language-value="<%= @suggested_translation.target_language.code %>"
+          data-autocomplete-language-changed-event-value="ts:target-language-changed"
+        >
+          <label
+            class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700"
+            data-autocomplete-target="label"
+          >
+            Equivalent saying in <%= @suggested_translation.target_language.name %>
+          </label>
+
+          <%= f.text_field :target_saying_text,
+                required: true,
+                minlength: Saying::MINIMUM_TEXT_LENGTH,
+                maxlength: Saying::MAXIMUM_TEXT_LENGTH,
+                autocomplete: "off",
+                placeholder: "Type a saying in #{@suggested_translation.target_language.name}…",
+                dir: "auto",
+                class: "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[16px] sm:text-sm text-slate-900 shadow-sm
+                       placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none
+                       focus:ring-1 focus:ring-sky-500/20",
+                data: {
+                  autocomplete_target: "input",
+                  action: "input->autocomplete#search keydown->autocomplete#handleKeydown"
+                } %>
+
+          <ul
+            id="target_suggestions"
+            aria-label="Target suggestions"
+            class="
+              absolute z-30 mt-1 w-full
+              rounded-xl border border-slate-200 bg-white
+              shadow-lg ring-1 ring-black/5
+              text-sm text-slate-900
+              overflow-hidden
+              dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
+              max-h-64 overflow-y-auto
+            "
+            data-autocomplete-target="list"
+            role="listbox"
+            hidden
+          ></ul>
+        </div>
+
+        <div class="flex w-full justify-end pt-1">
+          <button
+            type="submit"
+            data-turbo-submits-with="Add Translation"
+            class="inline-flex items-center rounded-full bg-[rgb(26,115,232)] px-4 py-2 text-sm font-medium text-white shadow-sm
+                   hover:brightness-90 hover:shadow-md"
+          >
+            Add Translation
+          </button>
+        </div>
+
+      <% end %>
+
+    </div>
+  </div>
+
+  <div class="mt-8 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6">
+    <div class="flex items-start gap-3">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+          <path d="M6 12l4 4 8-8"
+                stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M16 16l4 4m0-4l-4 4"
+                stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">2) Review Existing Translations</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          Vote <strong>up</strong>, <strong>down</strong>, or <strong>skip</strong> on translation pairs.
+          (Coming soon!)
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>

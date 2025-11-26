@@ -9,7 +9,12 @@ RSpec.describe Saying, type: :model do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:text) }
-    it { is_expected.to validate_length_of(:text).is_at_least(described_class::MINIMUM_TEXT_LENGTH) }
+
+    it {
+      expect(subject).to validate_length_of(:text)
+        .is_at_least(described_class::MINIMUM_TEXT_LENGTH)
+        .is_at_most(described_class::MAXIMUM_TEXT_LENGTH)
+    }
 
     it 'validates global, case-insensitive uniqueness of text' do
       create(:saying, text: 'actions speak louder than words')

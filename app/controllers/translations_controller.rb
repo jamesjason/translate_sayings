@@ -9,7 +9,7 @@ class TranslationsController < ApplicationController
       )
     end
 
-    @equivalents =
+    @equivalent_sayings =
       @source_saying&.equivalents_in(language: @target_language) || []
   end
 
@@ -39,7 +39,7 @@ class TranslationsController < ApplicationController
     return @source_language if defined?(@source_language)
 
     @source_language = Language.find_by(
-      code: (translations_params[:source_language].presence || 'en').downcase
+      code: (translations_params[:source_language].presence || Language::DEFAULT_SOURCE_LANGUAGE).downcase
     )
   end
 
@@ -47,7 +47,7 @@ class TranslationsController < ApplicationController
     return @target_language if defined?(@target_language)
 
     @target_language = Language.find_by(
-      code: (translations_params[:target_language].presence || 'fa').downcase
+      code: (translations_params[:target_language].presence || Language::DEFAULT_TARGET_LANGUAGE).downcase
     )
   end
 end

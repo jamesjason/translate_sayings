@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = [
@@ -8,146 +8,129 @@ export default class extends Controller {
     "targetLabel",
     "sourceInput",
     "targetInput"
-  ]
+  ];
 
   connect() {
-    this.handleClickOutside = this.handleClickOutside.bind(this)
-    document.addEventListener("click", this.handleClickOutside)
+    this._outsideClick = this.handleClickOutside.bind(this);
+    document.addEventListener("click", this._outsideClick);
   }
 
   disconnect() {
-    document.removeEventListener("click", this.handleClickOutside)
+    document.removeEventListener("click", this._outsideClick);
   }
 
   handleClickOutside(event) {
-    if (this.element.contains(event.target)) return
-    this.closeMenus()
+    if (!this.element.contains(event.target)) {
+      this.closeMenus();
+    }
   }
 
   closeMenus() {
-    if (this.hasSourceMenuTarget) this.sourceMenuTarget.classList.add("hidden")
-    if (this.hasTargetMenuTarget) this.targetMenuTarget.classList.add("hidden")
+    if (this.hasSourceMenuTarget) this.sourceMenuTarget.classList.add("hidden");
+    if (this.hasTargetMenuTarget) this.targetMenuTarget.classList.add("hidden");
   }
 
   toggleSourceMenu(event) {
-    event.stopPropagation()
-    if (!this.hasSourceMenuTarget) return
+    event.stopPropagation();
+    if (!this.hasSourceMenuTarget) return;
 
-    const wasHidden = this.sourceMenuTarget.classList.contains("hidden")
-    this.closeMenus()
+    const shouldShow = this.sourceMenuTarget.classList.contains("hidden");
+    this.closeMenus();
 
-    if (wasHidden) {
-      this.updateMenuSelection(this.sourceMenuTarget, this.sourceInputTarget.value)
-      this.sourceMenuTarget.classList.remove("hidden")
+    if (shouldShow) {
+      this.updateMenuSelection(this.sourceMenuTarget, this.sourceInputTarget.value);
+      this.sourceMenuTarget.classList.remove("hidden");
+    }
+  }
+
+  toggleTargetMenu(event) {
+    event.stopPropagation();
+    if (!this.hasTargetMenuTarget) return;
+
+    const shouldShow = this.targetMenuTarget.classList.contains("hidden");
+    this.closeMenus();
+
+    if (shouldShow) {
+      this.updateMenuSelection(this.targetMenuTarget, this.targetInputTarget.value);
+      this.targetMenuTarget.classList.remove("hidden");
     }
   }
 
   chooseSource(event) {
-    const button = event.currentTarget
-    const code = button.dataset.code
-    const name = button.dataset.name
-
-    const labelSpan =
-      this.sourceLabelTarget.querySelector("span.truncate") ||
-      this.sourceLabelTarget.querySelector("span")
-
-    if (labelSpan) {
-      labelSpan.textContent = name
-    }
-
-    this.sourceInputTarget.value = code
-
-    this.updateMenuSelection(this.sourceMenuTarget, code)
-    this.closeMenus()
-
-    this.sourceInputTarget.dispatchEvent(
-      new Event("change", { bubbles: true })
-    )
-  }
-
-  toggleTargetMenu(event) {
-    event.stopPropagation()
-    if (!this.hasTargetMenuTarget) return
-
-    const wasHidden = this.targetMenuTarget.classList.contains("hidden")
-    this.closeMenus()
-
-    if (wasHidden) {
-      this.updateMenuSelection(this.targetMenuTarget, this.targetInputTarget.value)
-      this.targetMenuTarget.classList.remove("hidden")
-    }
+    this.applySelection({
+      event,
+      input: this.sourceInputTarget,
+      label: this.sourceLabelTarget,
+      menu: this.sourceMenuTarget,
+      dispatchName: "ts:source-language-changed"
+    });
   }
 
   chooseTarget(event) {
-    const button = event.currentTarget
-    const code = button.dataset.code
-    const name = button.dataset.name
+    this.applySelection({
+      event,
+      input: this.targetInputTarget,
+      label: this.targetLabelTarget,
+      menu: this.targetMenuTarget,
+      dispatchName: "ts:target-language-changed"
+    });
+  }
 
-    const labelSpan =
-      this.targetLabelTarget.querySelector("span.truncate") ||
-      this.targetLabelTarget.querySelector("span")
+  applySelection({ event, input, label, menu, dispatchName }) {
+    const btn = event.currentTarget;
+    const code = btn.dataset.code;
+    const name = btn.dataset.name;
 
-    if (labelSpan) {
-      labelSpan.textContent = name
-    }
+    input.value = code;
 
-    this.targetInputTarget.value = code
+    const labelSpan = label.querySelector("span");
+    if (labelSpan) labelSpan.textContent = name;
 
-    this.updateMenuSelection(this.targetMenuTarget, code)
-    this.closeMenus()
+    this.updateMenuSelection(menu, code);
+    this.closeMenus();
+
+    window.dispatchEvent(new CustomEvent(dispatchName, { detail: { code, name } }));
   }
 
   swap(event) {
-    event.stopPropagation()
+    event.stopPropagation();
 
-    const sourceValue = this.sourceInputTarget.value
-    const targetValue = this.targetInputTarget.value
+    const sourceCode = this.sourceInputTarget.value;
+    const targetCode = this.targetInputTarget.value;
 
-    const sourceSpan =
-      this.sourceLabelTarget.querySelector("span.truncate") ||
-      this.sourceLabelTarget.querySelector("span")
-    const targetSpan =
-      this.targetLabelTarget.querySelector("span.truncate") ||
-      this.targetLabelTarget.querySelector("span")
+    const sourceName = this.sourceLabelTarget.querySelector("span")?.textContent;
+    const targetName = this.targetLabelTarget.querySelector("span")?.textContent;
 
-    const sourceText = sourceSpan?.textContent
-    const targetText = targetSpan?.textContent
+    this.sourceInputTarget.value = targetCode;
+    this.targetInputTarget.value = sourceCode;
 
-    this.sourceInputTarget.value = targetValue
-    this.targetInputTarget.value = sourceValue
-
-    if (sourceSpan && targetSpan && sourceText != null && targetText != null) {
-      sourceSpan.textContent = targetText
-      targetSpan.textContent = sourceText
+    if (sourceName && targetName) {
+      this.sourceLabelTarget.querySelector("span").textContent = targetName;
+      this.targetLabelTarget.querySelector("span").textContent = sourceName;
     }
 
-    if (this.hasSourceMenuTarget) {
-      this.updateMenuSelection(this.sourceMenuTarget, this.sourceInputTarget.value)
-    }
-    if (this.hasTargetMenuTarget) {
-      this.updateMenuSelection(this.targetMenuTarget, this.targetInputTarget.value)
-    }
+    window.dispatchEvent(
+      new CustomEvent("ts:source-language-changed", {
+        detail: { code: targetCode, name: targetName }
+      })
+    );
 
-    this.sourceInputTarget.dispatchEvent(
-      new Event("change", { bubbles: true })
-    )
+    window.dispatchEvent(
+      new CustomEvent("ts:target-language-changed", {
+        detail: { code: sourceCode, name: sourceName }
+      })
+    );
 
-    this.closeMenus()
+    this.closeMenus();
   }
 
   updateMenuSelection(menuEl, selectedCode) {
-    if (!menuEl) return
+    menuEl.querySelectorAll("button[data-code]").forEach((btn) => {
+      const isActive = btn.dataset.code === selectedCode;
+      btn.classList.toggle("bg-slate-50", isActive);
 
-    const buttons = menuEl.querySelectorAll("button[data-code]")
-    buttons.forEach((button) => {
-      const code = button.dataset.code
-      const check = button.querySelector('[data-role="check"]')
-
-      const active = code === selectedCode
-      button.classList.toggle("bg-slate-50", active)
-      if (check) {
-        check.classList.toggle("hidden", !active)
-      }
-    })
+      const check = btn.querySelector('[data-role="check"]');
+      if (check) check.classList.toggle("hidden", !isActive);
+    });
   }
 }

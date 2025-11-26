@@ -7,6 +7,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
+  has_many :suggested_translations, dependent: :destroy
+
   before_validation :normalize_email
   before_validation :set_default_role, on: :create
 

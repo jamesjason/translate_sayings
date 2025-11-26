@@ -5,7 +5,7 @@ Rails.application.routes.draw do
              },
              skip: [:registrations]
 
-  # Re-enable only the signup routes (new & create)
+  # Re-enable only the Devise signup routes
   as :user do
     get  'users/sign_up', to: 'devise/registrations#new',    as: :new_user_registration
     post 'users',         to: 'devise/registrations#create', as: :user_registration
@@ -14,6 +14,10 @@ Rails.application.routes.draw do
   get 'up' => 'rails/health#show', as: :rails_health_check
 
   root 'translations#index'
+
+  get '/contribute', to: 'suggested_translations#new', as: :contribute
+
+  resources :suggested_translations, only: %i[new create]
 
   resources :translations, only: [:index]
 

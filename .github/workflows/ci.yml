@@ -18,10 +18,10 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
+      - name: Scan for common Rails security vulnerabilities
         run: bin/brakeman --no-pager
 
-      - name: Scan for known security vulnerabilities in gems used
+      - name: Scan for known security vulnerabilities in gems
         run: bin/bundler-audit
 
   scan_js:
@@ -36,7 +36,7 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Scan for security vulnerabilities in JavaScript dependencies
+      - name: Scan JS dependencies (importmap)
         run: bin/importmap audit
 
   lint:
@@ -63,7 +63,7 @@ jobs:
           restore-keys: |
             rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-
 
-      - name: Lint code for consistent style
+      - name: Lint code
         run: bin/rubocop -f github
 
   test:
@@ -84,7 +84,7 @@ jobs:
           --health-retries=3
 
     steps:
-      - name: Install packages
+      - name: Install system packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
 
       - name: Checkout code
@@ -95,13 +95,16 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Build Tailwind CSS (tailwindcss-rails)
+        run: bin/rails tailwindcss:build
+
       - name: Prepare test database
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: bin/rails db:test:prepare
 
-      - name: Run RSpec test suite
+      - name: Run RSpec tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432

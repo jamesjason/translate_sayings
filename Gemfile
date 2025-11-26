@@ -41,8 +41,6 @@ group :development, :test do
   gem 'shoulda-matchers'
 
   gem 'annotate'
-  gem 'better_errors'
-  gem 'binding_of_caller'
   gem 'bullet'
   gem 'csv'
   gem 'nokogiri'
@@ -56,6 +54,8 @@ end
 ###########################################
 
 group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
   gem 'web-console'
 end
 

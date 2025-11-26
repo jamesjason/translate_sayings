@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  describe 'associations' do
+    it { is_expected.to have_many(:suggested_translations).dependent(:destroy) }
+  end
+
   describe 'validations' do
     it { is_expected.to validate_inclusion_of(:role).in_array(described_class::ROLES) }
     it { is_expected.to validate_uniqueness_of(:uid).scoped_to(:provider).allow_nil }

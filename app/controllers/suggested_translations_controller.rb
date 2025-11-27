@@ -18,7 +18,7 @@ class SuggestedTranslationsController < ApplicationController
       @suggested_translation.source_language ||= source_language
       @suggested_translation.target_language ||= target_language
 
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

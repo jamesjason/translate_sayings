@@ -1,0 +1,71 @@
+.vote-circle {
+  height: 64px;
+  width: 64px;
+  border-radius: 9999px;
+  border: 2px solid #cbd5e1;
+  background: white;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.vote-circle-sm {
+  height: 52px;
+  width: 52px;
+}
+
+.vote-circle-sm svg {
+  height: 22px;
+  width: 22px;
+}
+
+.vote-btn:hover .vote-circle {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+}
+
+.vote-btn-up:hover .vote-circle {
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+}
+
+.vote-btn-down:hover .vote-circle {
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+}
+
+.vote-animate {
+  animation: vote-pop 260ms ease-out;
+}
+
+@keyframes vote-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.25); }
+  100% { transform: scale(1.12); }
+}
+
+.vote-active-up {
+  background-color: #10b981;
+  border-color: #059669;
+  color: white;
+  transform: scale(1.12);
+}
+
+.vote-active-down {
+  background-color: #ef4444;
+  border-color: #dc2626;
+  color: white;
+  transform: scale(1.12);
+}
+
+@media (hover: none) {
+  .vote-btn:hover .vote-circle,
+  .vote-btn-up:hover .vote-circle,
+  .vote-btn-down:hover .vote-circle {
+    box-shadow: none !important;
+  }
+}

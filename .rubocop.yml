@@ -82,3 +82,6 @@ RSpec/NamedSubject:
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false

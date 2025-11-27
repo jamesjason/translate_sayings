@@ -1,0 +1,108 @@
+<%= render "devise/shared/error_messages", resource: suggested_translation %>
+
+<%= form_with model: suggested_translation,
+              url: suggested_translations_path,
+              class: "space-y-5" do |f| %>
+
+  <%= render "shared/language_selector",
+        source_language: suggested_translation.source_language,
+        target_language: suggested_translation.target_language,
+        source_field: "suggested_translation[source_language_code]",
+        target_field: "suggested_translation[target_language_code]" %>
+
+  <div
+    class="relative"
+    data-controller="autocomplete"
+    data-autocomplete-url-value="<%= autocomplete_sayings_path %>"
+    data-autocomplete-submit-on-select-value="false"
+    data-autocomplete-source-language-value="<%= suggested_translation.source_language.code %>"
+    data-autocomplete-language-changed-event-value="ts:source-language-changed"
+  >
+    <label
+      class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700"
+      data-autocomplete-target="label"
+    >
+      <%= suggested_translation.source_language.name %> Saying
+    </label>
+
+    <%= f.text_field :source_saying_text,
+          required: true,
+          minlength: Saying::MINIMUM_TEXT_LENGTH,
+          maxlength: Saying::MAXIMUM_TEXT_LENGTH,
+          autocomplete: "off",
+          placeholder: "Type a saying in #{suggested_translation.source_language.name}…",
+          dir: "auto",
+          class: "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[16px] sm:text-sm text-slate-900 shadow-sm
+                 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none
+                 focus:ring-1 focus:ring-sky-500/20",
+          data: {
+            autocomplete_target: "input",
+            action: "input->autocomplete#search keydown->autocomplete#handleKeydown"
+          } %>
+
+    <ul
+      id="source_suggestions"
+      aria-label="Source suggestions"
+      class="absolute z-30 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ring-1 ring-black/5
+             text-sm text-slate-900 overflow-hidden dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
+             max-h-64 overflow-y-auto"
+      data-autocomplete-target="list"
+      role="listbox"
+      hidden
+    ></ul>
+  </div>
+
+  <div
+    class="relative"
+    data-controller="autocomplete"
+    data-autocomplete-url-value="<%= autocomplete_sayings_path %>"
+    data-autocomplete-submit-on-select-value="false"
+    data-autocomplete-source-language-value="<%= suggested_translation.target_language.code %>"
+    data-autocomplete-language-changed-event-value="ts:target-language-changed"
+  >
+    <label
+      class="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-700"
+      data-autocomplete-target="label"
+    >
+      Equivalent saying in <%= suggested_translation.target_language.name %>
+    </label>
+
+    <%= f.text_field :target_saying_text,
+          required: true,
+          minlength: Saying::MINIMUM_TEXT_LENGTH,
+          maxlength: Saying::MAXIMUM_TEXT_LENGTH,
+          autocomplete: "off",
+          placeholder: "Type a saying in #{suggested_translation.target_language.name}…",
+          dir: "auto",
+          class: "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[16px] sm:text-sm text-slate-900 shadow-sm
+                 placeholder:text-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none
+                 focus:ring-1 focus:ring-sky-500/20",
+          data: {
+            autocomplete_target: "input",
+            action: "input->autocomplete#search keydown->autocomplete#handleKeydown"
+          } %>
+
+    <ul
+      id="target_suggestions"
+      aria-label="Target suggestions"
+      class="absolute z-30 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-lg ring-1 ring-black/5
+             text-sm text-slate-900 overflow-hidden dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
+             max-h-64 overflow-y-auto"
+      data-autocomplete-target="list"
+      role="listbox"
+      hidden
+    ></ul>
+  </div>
+
+  <div class="flex w-full justify-end pt-1">
+    <button
+      type="submit"
+      data-turbo-submits-with="Add Translation"
+      class="inline-flex items-center rounded-full bg-[rgb(26,115,232)] px-4 py-2 text-sm font-medium text-white shadow-sm
+             hover:brightness-90 hover:shadow-md disabled:bg-slate-400 disabled:cursor-not-allowed disabled:text-white disabled:shadow-none"
+    >
+      Add Translation
+    </button>
+  </div>
+
+<% end %>

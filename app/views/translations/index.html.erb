@@ -1,5 +1,6 @@
 <div class="mx-auto w-full max-w-3xl">
 
+  <!-- Header -->
   <div class="mb-6 sm:mb-8">
     <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
       Translate sayings
@@ -9,11 +10,11 @@
     </p>
   </div>
 
+  <!-- Search Form -->
   <div class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6">
-    <%= form_with \
-          url: translations_path,
-          method: :get,
-          class: "space-y-5" do %>
+    <%= form_with url: translations_path,
+                  method: :get,
+                  class: "space-y-5" do %>
 
       <%= render "shared/language_selector",
             source_language: @source_language,
@@ -21,6 +22,7 @@
             source_field: :source_language,
             target_field: :target_language %>
 
+      <!-- Query Input w/ Autocomplete -->
       <div class="relative"
            data-controller="autocomplete"
            data-autocomplete-submit-on-select-value="true"
@@ -57,13 +59,9 @@
           id="translation_suggestions"
           aria-label="Suggestions"
           class="
-            absolute z-30 mt-1 w-full
-            rounded-xl border border-slate-200 bg-white
-            shadow-lg ring-1 ring-black/5
-            text-sm text-slate-900
-            overflow-hidden
-            dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
-            max-h-64 overflow-y-auto
+            absolute z-30 mt-1 w-full rounded-xl border border-slate-200 bg-white
+            shadow-lg ring-1 ring-black/5 text-sm text-slate-900
+            max-h-64 overflow-y-auto dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100
           "
           data-autocomplete-target="list"
           role="listbox"
@@ -71,14 +69,14 @@
         ></ul>
       </div>
 
+      <!-- Submit Button -->
       <div class="flex w-full items-center justify-end gap-3 pt-1">
         <button
           type="submit"
           data-turbo-submits-with="Translate"
           class="inline-flex items-center gap-1.5 rounded-full bg-[rgb(26,115,232)] px-4 py-2 text-sm font-medium text-white shadow-sm
                  hover:brightness-90 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20
-                 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:bg-slate-400
-                 disabled:text-white disabled:shadow-none"
+                 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:bg-slate-400 disabled:text-white"
         >
           Translate
         </button>
@@ -87,8 +85,10 @@
     <% end %>
   </div>
 
+  <!-- Results -->
   <% if @source_saying.present? %>
     <section class="mt-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-live="polite">
+
       <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 class="min-w-0 text-sm font-semibold text-slate-800">
           Equivalent sayings in <%= @target_language.name %>
@@ -98,14 +98,81 @@
         </p>
       </div>
 
-      <% if @equivalent_sayings.any? %>
-        <ul class="mt-3 space-y-1.5 text-sm leading-relaxed text-slate-900">
-          <% @equivalent_sayings.each do |saying| %>
-            <li class="rounded-lg bg-slate-50 px-3 py-1.5 wrap-break-word" dir="auto">
-              <%= saying.text %>
-            </li>
+      <% if @translations.any? %>
+
+        <div class="mt-4 space-y-6">
+          <% @translations.each do |translation| %>
+            <% target_saying =
+                 (translation.saying_a_id == @source_saying.id) ?
+                   translation.saying_b :
+                   translation.saying_a %>
+
+            <div
+              class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-5"
+              data-controller="vote"
+              data-vote-id-value="<%= translation.id %>"
+            >
+
+              <!-- Source Saying -->
+              <div class="text-base font-medium text-slate-900 bg-slate-50 rounded-xl p-4 leading-relaxed" dir="auto">
+                <%= @source_saying.text %>
+              </div>
+
+              <!-- Target Saying -->
+              <div class="text-base font-medium text-slate-900 bg-slate-50 rounded-xl p-4 leading-relaxed" dir="auto">
+                <%= target_saying.text %>
+              </div>
+
+              <div class="h-px bg-slate-200"></div>
+
+              <p class="text-xs text-slate-500 text-center mb-3">
+                Are these sayings equivalent?
+              </p>
+
+              <!-- Voting -->
+              <div class="flex items-center justify-center gap-14 pt-2">
+
+                <!-- Downvote -->
+                <button
+                  data-action="vote#downvote"
+                  class="vote-btn vote-btn-down flex flex-col items-center gap-2"
+                >
+                  <div class="vote-circle vote-circle-sm <%= 'vote-active-down' if translation.user_vote_value(current_user) == -1 %>">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M6 6l12 12M18 6l-12 12"
+                        stroke="currentColor" stroke-width="2.3" stroke-linecap="round"
+                      />
+                    </svg>
+                  </div>
+                  <span data-vote-target="down" class="text-xs text-slate-700">
+                    <%= translation.downvotes_count %>
+                  </span>
+                </button>
+
+                <!-- Upvote -->
+                <button
+                  data-action="vote#upvote"
+                  class="vote-btn vote-btn-up flex flex-col items-center gap-2"
+                >
+                  <div class="vote-circle vote-circle-sm <%= 'vote-active-up' if translation.user_vote_value(current_user) == 1 %>">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M5 13l4 4L19 7"
+                        stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span data-vote-target="up" class="text-xs text-slate-700">
+                    <%= translation.upvotes_count %>
+                  </span>
+                </button>
+
+              </div>
+            </div>
           <% end %>
-        </ul>
+        </div>
+
       <% else %>
         <p class="mt-3 text-sm text-slate-600">
           No equivalent sayings found.
@@ -114,11 +181,14 @@
     </section>
 
   <% elsif @query.present? %>
+
+    <!-- No source saying found -->
     <section aria-live="polite">
-      <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm wrap-break-word">
+      <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm break-words">
         No saying found matching “<%= @query %>”.
       </div>
     </section>
+
   <% end %>
 
 </div>

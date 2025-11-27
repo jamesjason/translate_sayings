@@ -8,6 +8,7 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   has_many :suggested_translations, dependent: :destroy
+  has_many :translation_votes, dependent: :destroy
 
   before_validation :normalize_email
   before_validation :set_default_role, on: :create

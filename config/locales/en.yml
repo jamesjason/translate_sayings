@@ -31,3 +31,13 @@ en:
   devise:
     oauth:
       google_failure: "Google authentication failed."
+
+  activerecord:
+    errors:
+      models:
+        translation_vote:
+          attributes:
+            vote:
+              invalid_vote: "must be -1 (downvote), 0 (neutral), or 1 (upvote)"
+            user_id:
+              already_voted: "has already voted on this translation"

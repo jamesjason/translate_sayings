@@ -26,4 +26,8 @@ Rails.application.routes.draw do
       get :autocomplete
     end
   end
+
+  resources :translation_reviews, only: [:index] do
+    post :vote, on: :collection
+  end
 end

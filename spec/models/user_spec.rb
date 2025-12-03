@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
   describe 'associations' do
     it { is_expected.to have_many(:suggested_translations).dependent(:destroy) }
+    it { is_expected.to have_many(:translation_votes).dependent(:destroy) }
   end
 
   describe 'validations' do

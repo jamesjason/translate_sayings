@@ -1,53 +1,54 @@
 class TranslationsController < ApplicationController
-  before_action :set_languages_and_query
+  before_action :set_query, :set_languages
 
   def index
-    if @query.present?
-      @source_saying = Saying.find_by(
-        language: @source_language,
-        text: normalized_query
-      )
-    end
+    return @translations = [] if @query.blank?
 
-    @equivalent_sayings =
-      @source_saying&.equivalents_in(language: @target_language) || []
+    @source_saying = Saying.find_by(
+      language: source_language,
+      text: @normalized_query
+    )
+
+    @translations = fetch_translations
   end
 
   private
-
-  def set_languages_and_query
-    @query = query
-    source_language
-    target_language
-  end
 
   def translations_params
     params.permit(:source_language, :target_language, :q)
   end
 
-  def query
-    translations_params[:q].to_s.strip
+  def set_query
+    raw = translations_params[:q].to_s.strip
+    @query = raw
+    @normalized_query = raw.downcase.gsub(/\s+/, ' ')
   end
 
-  def normalized_query
-    return @normalized_query if defined?(@normalized_query)
-
-    @normalized_query = query.downcase.gsub(/\s+/, ' ')
+  def set_languages
+    source_language
+    target_language
   end
 
   def source_language
-    return @source_language if defined?(@source_language)
-
-    @source_language = Language.find_by(
-      code: (translations_params[:source_language].presence || Language::DEFAULT_SOURCE_LANGUAGE).downcase
-    )
+    @source_language ||= Language.find_by(code: translations_params[:source_language].presence) ||
+                         Language.find_by!(code: Language::DEFAULT_SOURCE_LANGUAGE)
   end
 
   def target_language
-    return @target_language if defined?(@target_language)
+    @target_language ||= Language.find_by(code: translations_params[:target_language].presence) ||
+                         Language.find_by!(code: Language::DEFAULT_TARGET_LANGUAGE)
+  end
 
-    @target_language = Language.find_by(
-      code: (translations_params[:target_language].presence || Language::DEFAULT_TARGET_LANGUAGE).downcase
-    )
+  def fetch_translations
+    return [] unless @source_saying
+
+    SayingTranslation
+      .for_saying(source_saying: @source_saying)
+      .between_languages(
+        language_a: source_language,
+        language_b: target_language
+      )
+      .includes(:translation_votes, :saying_a, :saying_b)
+      .sort_by { |translation| -translation.accuracy_score }
   end
 end

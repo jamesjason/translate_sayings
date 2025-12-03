@@ -5,6 +5,15 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  def authenticate_user!
+    return super if user_signed_in?
+
+    respond_to do |format|
+      format.html { super }
+      format.json { render json: { error: 'unauthenticated' }, status: :unauthorized }
+    end
+  end
+
   def after_sign_in_path_for(resource)
     stored_location_for(resource) || super
   end

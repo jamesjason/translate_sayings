@@ -1,0 +1,342 @@
+<%= tag.div(
+  data: {
+    controller: "translation-review",
+    translation_review_items_url_value: translation_reviews_path(format: :json),
+    translation_review_current_index_value: 0
+  },
+  class: "mt-8 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6 min-h-[320px]"
+) do %>
+
+  <div class="flex items-start gap-3 mb-6">
+    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+        <path d="M6 12l4 4L19 7"
+              stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-semibold text-slate-900">
+        2) Review Existing Translations
+      </h2>
+      <p class="mt-1 text-sm text-slate-600">
+        Review each translation and cast your vote.
+      </p>
+    </div>
+  </div>
+
+  <div
+    data-translation-review-target="progressWrapper"
+    class="flex items-center mb-6 hidden"
+  >
+    <button
+      data-action="translation-review#goPrev"
+      data-translation-review-target="prevBtn"
+      class="h-8 w-8 flex items-center justify-center rounded-full
+             bg-white border border-slate-200 shadow-sm text-slate-600
+             hover:bg-slate-50 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed mr-3">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24">
+        <path d="M15 6l-6 6 6 6"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="flex-1 relative">
+      <div
+        class="absolute -top-[18px] left-1/2 -translate-x-1/2 text-xs text-slate-500"
+        data-translation-review-target="progressText">
+      </div>
+
+      <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex items-center">
+        <div
+          data-translation-review-target="progressBar"
+          class="h-full bg-sky-500 transition-all duration-300"
+          style="width: 0%;">
+        </div>
+      </div>
+    </div>
+
+    <button
+      data-action="translation-review#goNext"
+      data-translation-review-target="nextBtn"
+      class="h-8 w-8 flex items-center justify-center rounded-full
+             bg-white border border-slate-200 shadow-sm text-slate-600
+             hover:bg-slate-50 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ml-3">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24">
+        <path d="M9 18l6-6-6-6"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="relative min-h-[360px]">
+
+    <div
+      data-translation-review-target="startScreen"
+      class="rounded-2xl border border-slate-200 bg-white shadow p-8 text-center
+             min-h-[320px] flex flex-col justify-center"
+    >
+
+      <h2 class="text-xl font-semibold text-slate-900 mb-2">
+        Choose Two Languages
+      </h2>
+
+      <p class="text-sm text-slate-600 mb-8">
+        Choose a pair of languages to begin reviewing translations
+      </p>
+
+      <%= hidden_field_tag :language_a_code,
+            Language::DEFAULT_SOURCE_LANGUAGE,
+            data: { translation_review_target: "languageAInput" } %>
+
+      <%= hidden_field_tag :language_b_code,
+            Language::DEFAULT_TARGET_LANGUAGE,
+            data: { translation_review_target: "languageBInput" } %>
+
+      <div class="space-y-4 sm:flex sm:items-end sm:gap-6 sm:space-y-0 justify-center mb-8">
+
+        <div class="relative sm:flex-1">
+          <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white
+                   px-3 py-2 text-left text-sm shadow-sm text-slate-900 cursor-pointer
+                   hover:border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-500/20
+                   focus:border-sky-500"
+            data-translation-review-target="languageALabel"
+            data-action="translation-review#toggleLanguageAMenu"
+          >
+            <span class="truncate"><%= Language::LANGUAGE_CODE_TO_NAME_MAP[Language::DEFAULT_SOURCE_LANGUAGE] %></span>
+            <span class="ml-2 text-slate-400">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+                <path d="M6 8l4 4 4-4"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </button>
+
+          <div
+            class="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200
+                   bg-white text-sm shadow-lg hidden"
+            role="listbox"
+            data-translation-review-target="languageAMenu"
+          >
+            <% Language::LANGUAGE_CODE_TO_NAME_MAP.sort_by { |_c, n| n }.each do |code, name| %>
+              <button
+                type="button"
+                role="option"
+                aria-selected="<%= code == Language::DEFAULT_SOURCE_LANGUAGE %>"
+                class="flex w-full items-center justify-between px-3 py-2 text-left cursor-pointer
+                       hover:bg-slate-50 <%= 'bg-slate-50' if code == Language::DEFAULT_SOURCE_LANGUAGE %>"
+                data-action="translation-review#chooseLanguageA"
+                data-code="<%= code %>"
+                data-name="<%= name %>"
+              >
+                <span class="truncate"><%= name %></span>
+                <span class="text-slate-400 <%= code == Language::DEFAULT_SOURCE_LANGUAGE ? '' : 'hidden' %>"
+                      data-role="check">✓</span>
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="relative sm:flex-1">
+          <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white
+                   px-3 py-2 text-left text-sm shadow-sm text-slate-900 cursor-pointer
+                   hover:border-slate-300 focus:outline-none focus:ring-1 focus:ring-sky-500/20
+                   focus:border-sky-500"
+            data-translation-review-target="languageBLabel"
+            data-action="translation-review#toggleLanguageBMenu"
+          >
+            <span class="truncate"><%= Language::LANGUAGE_CODE_TO_NAME_MAP[Language::DEFAULT_TARGET_LANGUAGE] %></span>
+            <span class="ml-2 text-slate-400">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+                <path d="M6 8l4 4 4-4"
+                      stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </button>
+
+          <div
+            class="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200
+                   bg-white text-sm shadow-lg hidden"
+            role="listbox"
+            data-translation-review-target="languageBMenu"
+          >
+            <% Language::LANGUAGE_CODE_TO_NAME_MAP.sort_by { |_c, n| n }.each do |code, name| %>
+              <button
+                type="button"
+                role="option"
+                aria-selected="<%= code == Language::DEFAULT_TARGET_LANGUAGE %>"
+                class="flex w-full items-center justify-between px-3 py-2 text-left cursor-pointer
+                       hover:bg-slate-50 <%= 'bg-slate-50' if code == Language::DEFAULT_TARGET_LANGUAGE %>"
+                data-action="translation-review#chooseLanguageB"
+                data-code="<%= code %>"
+                data-name="<%= name %>"
+              >
+                <span class="truncate"><%= name %></span>
+                <span class="text-slate-400 <%= code == Language::DEFAULT_TARGET_LANGUAGE ? '' : 'hidden' %>"
+                      data-role="check">✓</span>
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex justify-center w-full mt-8">
+        <button
+          data-action="translation-review#start"
+          class="inline-flex items-center gap-2 rounded-full px-6 py-3
+                 bg-sky-600 text-white font-medium text-sm shadow-md
+                 hover:bg-sky-700 hover:shadow-lg active:scale-[0.98]
+                 transition-all duration-150"
+        >
+          Start Reviewing
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+            <path d="M7 5l5 5-5 5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <div data-translation-review-target="noItemsCard"
+         class="hidden text-center py-14 px-4 rounded-2xl border border-slate-200 bg-white shadow
+                min-h-[320px] flex flex-col items-center justify-center">
+
+      <h2 class="text-xl font-semibold text-slate-800 mb-3">
+        No Translations Available
+      </h2>
+
+      <p class="text-sm text-slate-600 mb-6 max-w-xs">
+        There are no translations available to review for this language pair.
+      </p>
+
+      <div class="flex justify-center w-full">
+        <button
+          data-action="translation-review#returnToLanguageSelection"
+          class="inline-flex items-center gap-2 rounded-full px-6 py-3
+                 bg-sky-600 text-white font-medium text-sm shadow-md
+                 hover:bg-sky-700 hover:shadow-lg active:scale-[0.98]
+                 transition-all duration-150"
+        >
+          Choose Different Languages
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+            <path d="M7 5l5 5-5 5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div data-translation-review-target="card"
+         class="hidden rounded-2xl border border-slate-200 bg-white shadow p-8
+                min-h-[320px] flex flex-col justify-between transition-transform duration-300 ease-out">
+
+      <div class="space-y-4">
+        <div data-translation-review-target="sayingA"
+             class="text-lg font-medium text-slate-900 bg-slate-50 rounded-xl p-4 leading-relaxed"
+             dir="auto"></div>
+
+        <div data-translation-review-target="sayingB"
+             class="text-lg font-medium text-slate-900 bg-slate-50 rounded-xl p-4 leading-relaxed"
+             dir="auto"></div>
+      </div>
+
+      <div class="h-px bg-slate-200 mt-8 mb-6"></div>
+
+      <p class="text-xs text-slate-500 text-center mb-3">
+        Are these sayings equivalent?
+      </p>
+
+      <div class="flex items-center justify-center gap-14">
+
+        <button
+          data-action="translation-review#voteDown"
+          data-translation-review-target="downvoteBtn"
+          class="vote-btn vote-btn-down flex flex-col items-center gap-2 group cursor-pointer">
+          <div class="vote-circle" data-role="circle">
+            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24">
+              <path d="M6 6l12 12M18 6l-12 12"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span data-translation-review-target="downvoteCount"
+                class="text-sm text-slate-700">0</span>
+        </button>
+
+        <button
+          data-action="translation-review#voteUp"
+          data-translation-review-target="upvoteBtn"
+          class="vote-btn vote-btn-up flex flex-col items-center gap-2 group cursor-pointer">
+          <div class="vote-circle" data-role="circle">
+            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span data-translation-review-target="upvoteCount"
+                class="text-sm text-slate-700">0</span>
+        </button>
+      </div>
+    </div>
+
+    <div
+      data-translation-review-target="completeCard"
+      class="hidden text-center py-12 px-6 rounded-2xl border border-slate-200 bg-white shadow-lg min-h-[381px]
+             flex flex-col items-center justify-center animate-fade-in"
+    >
+
+      <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
+        <svg class="h-10 w-10 text-emerald-500" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M5 13l4 4L19 7"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+
+      <h2 class="text-3xl font-semibold text-slate-900 mb-3">
+        Thanks for contributing!
+      </h2>
+
+      <p class="text-slate-600 text-sm sm:text-base max-w-sm mb-8">
+        Your contribution improves the dataset for everyone
+      </p>
+
+      <button
+        data-action="translation-review#loadNewItems"
+        class="inline-flex items-center gap-2 rounded-full px-6 py-3
+               bg-sky-600 text-white font-medium text-sm shadow-md
+               hover:bg-sky-700 hover:shadow-lg active:scale-[0.98]
+               transition-all duration-150"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Review 10 More
+      </button>
+    </div>
+
+  </div>
+<% end %>

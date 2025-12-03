@@ -1,0 +1,59 @@
+<div
+  class="relative"
+  data-controller="overlay"
+  data-overlay-active-value="<%= flash[:inline_flash] ? 'true' : 'false' %>"
+>
+
+  <div
+    data-overlay-target="panel"
+    class="absolute inset-0 z-20 hidden flex items-center justify-center rounded-2xl bg-white/40 backdrop-blur-md transition-opacity duration-300"
+  >
+    <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 shadow-xl">
+      <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M5 13l4 4L19 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold text-emerald-600">Translation added!</h3>
+        <p class="text-sm text-slate-600">
+          <span class="font-semibold text-slate-700">Status:</span>
+          <span class="text-amber-600 font-medium">Awaiting Review</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6">
+
+    <div class="mb-6 flex items-start gap-3">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-600">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+          <path d="M12 6v12M6 12h12"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">1) Add a New Translation</h2>
+        <p class="mt-1 text-sm text-slate-600">
+          Add a new pair of equivalent sayings by completing the form below.
+        </p>
+      </div>
+    </div>
+
+    <%= render "shared/add_translation_form",
+          suggested_translation: suggested_translation %>
+
+  </div>
+</div>

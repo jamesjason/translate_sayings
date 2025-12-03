@@ -83,7 +83,7 @@ RSpec.describe 'SuggestedTranslations', type: :request do
 
         post suggested_translations_path, params: bad_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include(%(action="/suggested_translations"))
       end
 
@@ -99,7 +99,7 @@ RSpec.describe 'SuggestedTranslations', type: :request do
 
         post suggested_translations_path, params: invalid_params
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         expect(response.body).to include(%(action="/suggested_translations"))
         expect(response.body).to include('data-test="error-messages"')

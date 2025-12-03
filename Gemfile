@@ -47,6 +47,8 @@ group :development, :test do
   gem 'openai'
   gem 'pry-rails'
   gem 'rack-mini-profiler'
+  gem 'simplecov', require: false
+  gem 'simplecov-json', require: false
 end
 
 ###########################################

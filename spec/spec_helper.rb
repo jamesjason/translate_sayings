@@ -13,6 +13,29 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+# --- SimpleCov Setup -----------------------------------------------
+require 'simplecov'
+
+if ENV['CI']
+  require 'simplecov-json'
+
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::JSONFormatter
+  ]
+end
+
+SimpleCov.start 'rails' do
+  enable_coverage :branch
+
+  add_filter '/config/'
+  add_filter '/vendor/'
+  add_filter '/bin/'
+  add_filter '/db/'
+end
+# ---------------------------------------------------------------------------
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

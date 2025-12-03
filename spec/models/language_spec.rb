@@ -49,4 +49,16 @@ RSpec.describe Language, type: :model do
       end.to raise_error(ActiveRecord::CheckViolation)
     end
   end
+
+  describe '.name_for' do
+    it 'returns the correct language name for a valid code' do
+      expect(described_class.name_for(code: 'en')).to eq('English')
+      expect(described_class.name_for(code: 'FA')).to eq('Persian')
+      expect(described_class.name_for(code: ' es ')).to eq('Spanish')
+    end
+
+    it 'returns nil for an unsupported code' do
+      expect(described_class.name_for(code: 'zzz')).to be_nil
+    end
+  end
 end

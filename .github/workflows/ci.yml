@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  pull_request:
 
 jobs:
   scan_ruby:
@@ -18,10 +18,10 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities
+      - name: Brakeman security scan
         run: bin/brakeman --no-pager
 
-      - name: Scan for known security vulnerabilities in gems
+      - name: Bundler Audit scan
         run: bin/bundler-audit
 
   scan_js:
@@ -63,7 +63,7 @@ jobs:
           restore-keys: |
             rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-
 
-      - name: Lint code
+      - name: Run RuboCop
         run: bin/rubocop -f github
 
   test:
@@ -71,21 +71,23 @@ jobs:
 
     services:
       postgres:
-        image: postgres
+        image: postgres:14
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
-          - 5432:5432
+          - "5432:5432"
         options: >-
-          --health-cmd="pg_isready"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
       - name: Install system packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libpq-dev
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -95,7 +97,7 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Build Tailwind CSS (tailwindcss-rails)
+      - name: Build TailwindCSS
         run: bin/rails tailwindcss:build
 
       - name: Prepare test database
@@ -104,8 +106,16 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: bin/rails db:test:prepare
 
-      - name: Run RSpec tests
+      - name: Run RSpec (with SimpleCov)
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          CI: true
         run: bundle exec rspec
+
+      - name: Upload coverage JSON artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/coverage.json
+          retention-days: 7

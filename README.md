@@ -1,7 +1,6 @@
 # README
 
-[![codecov](https://codecov.io/gh/jamesjason/translate_sayings/branch/main/graph/badge.svg)](https://codecov.io/gh/jamesjason/translate_sayings)
-
+[![codecov](https://codecov.io/gh/jamesjason/translate_sayings/graph/badge.svg?token=CHZTOBY8AT)](https://codecov.io/gh/jamesjason/translate_sayings)
 
 This README would normally document whatever steps are necessary to get the
 application up and running.

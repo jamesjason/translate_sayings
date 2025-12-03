@@ -26,13 +26,21 @@ if ENV['CI']
   ]
 end
 
-SimpleCov.start 'rails' do
-  enable_coverage :branch
+SimpleCov.start do
+  # Track only real application runtime code
+  track_files '{app,lib}/**/*.rb'
 
-  add_filter '/config/'
-  add_filter '/vendor/'
-  add_filter '/bin/'
-  add_filter '/db/'
+  # Exclude non-runtime lib directories
+  add_filter '/lib/tasks/'
+  add_filter '/lib/generators/'
+  add_filter '/lib/templates/'
+  add_filter '/lib/assets/'
+
+  # exclude migrations & schema
+  add_filter '/db/migrate/'
+  add_filter '/db/schema.rb'
+
+  enable_coverage :branch
 end
 # ---------------------------------------------------------------------------
 

@@ -19,6 +19,7 @@
     <div class="flex items-center gap-3">
 
       <nav
+        data-test="nav"
         class="hidden items-center gap-6 text-xs sm:flex sm:text-sm"
         aria-label="Main navigation"
       >
@@ -57,7 +58,7 @@
           </svg>
         </summary>
 
-        <div role="menu" class="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1.5 text-sm shadow-lg">
+        <div data-test="nav" role="menu" class="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-slate-200 bg-white py-1.5 text-sm shadow-lg">
           <%= link_to "Search", root_path, class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
           <%= link_to "Contribute", contribute_path, class: "block px-4 py-2 text-slate-700 hover:bg-slate-50" %>
 

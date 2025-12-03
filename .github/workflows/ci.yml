@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Scan JS dependencies (importmap)
+      - name: Scan JS dependencies
         run: bin/importmap audit
 
   lint:
@@ -59,9 +59,9 @@ jobs:
           DEPENDENCIES_HASH: ${{ hashFiles('.ruby-version', '**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile.lock') }}
         with:
           path: ${{ env.RUBOCOP_CACHE_ROOT }}
-          key: rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
+          key: rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}
           restore-keys: |
-            rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-
+            rubocop-${{ runner.os }}-
 
       - name: Run RuboCop
         run: bin/rubocop -f github
@@ -84,10 +84,41 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Install system packages
+      - name: Install system packages & Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y libpq-dev
+          sudo apt-get install --no-install-recommends -y \
+            libpq-dev \
+            xvfb \
+            unzip \
+            wget \
+            jq
+
+          wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+
+      - name: Install matching ChromeDriver (Chrome for Testing)
+        run: |
+          CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+          MAJOR_VERSION=${CHROME_VERSION%%.*}
+
+          echo "Chrome version: $CHROME_VERSION"
+          echo "Major: $MAJOR_VERSION"
+
+          wget -q https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json -O versions.json
+          DRIVER_VERSION=$(jq -r ".channels.Stable.version" versions.json)
+
+          echo "Using ChromeDriver version: $DRIVER_VERSION"
+
+          DRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${DRIVER_VERSION}/linux64/chromedriver-linux64.zip"
+
+          wget -q "$DRIVER_URL"
+          unzip chromedriver-linux64.zip
+
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+
+          rm -rf chromedriver-linux64 chromedriver-linux64.zip versions.json
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -106,21 +137,22 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: bin/rails db:test:prepare
 
-      - name: Run RSpec (with SimpleCov)
+      - name: Run RSpec (with coverage)
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           CI: true
-        run: bundle exec rspec
+        run: |
+          xvfb-run --auto-servernum bundle exec rspec
 
-      - name: Upload coverage JSON report
+      - name: Upload coverage JSON
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/coverage.json
           retention-days: 7
 
-      - name: Upload coverage to Codecov
+      - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

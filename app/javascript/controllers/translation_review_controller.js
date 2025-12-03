@@ -172,7 +172,8 @@ export default class extends Controller {
   }
 
   async sendVote(id, vote) {
-    const csrf = document.querySelector("meta[name='csrf-token']").content
+    const csrfMeta = document.querySelector("meta[name='csrf-token']");
+    const csrf = csrfMeta ? csrfMeta.content : "";
 
     const response = await fetch("/translation_reviews/vote", {
       method: "POST",

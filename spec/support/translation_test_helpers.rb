@@ -16,8 +16,8 @@ module TranslationTestHelpers
   end
 
   def create_default_languages
-    english = create(:language)
-    persian = create(:language, :fa)
+    english = Language.find_by(code: 'en') || create(:language)
+    persian = Language.find_by(code: 'fa') || create(:language, :fa)
 
     [english, persian]
   end

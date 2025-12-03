@@ -51,9 +51,8 @@ export default class extends Controller {
   }
 
   async sendVote(id, vote) {
-    const csrf = document
-      .querySelector("meta[name='csrf-token']")
-      .getAttribute("content")
+    const csrfMeta = document.querySelector("meta[name='csrf-token']");
+    const csrf = csrfMeta ? csrfMeta.content : "";
 
     return fetch("/translation_reviews/vote", {
       method: "POST",
@@ -62,9 +61,8 @@ export default class extends Controller {
         "X-CSRF-Token": csrf
       },
       body: JSON.stringify({ id, vote })
-    })
+    });
   }
-
   applyActiveStyle(vote) {
     const upCircle = this.element.querySelector(".vote-btn-up .vote-circle")
     const downCircle = this.element.querySelector(".vote-btn-down .vote-circle")

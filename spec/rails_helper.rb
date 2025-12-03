@@ -91,12 +91,10 @@ RSpec.configure do |config|
   config.include Warden::Test::Helpers, type: :system
   config.before(type: :system) do
     Warden.test_mode!
-    OmniAuth.config.test_mode = true
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
   end
+
   config.after(type: :system) do
     Warden.test_reset!
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
   end
 
   # Automatically use Capybara/Selenium for system tests

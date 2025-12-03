@@ -87,7 +87,7 @@ RSpec.describe 'User authentication', type: :system do
   end
 
   it 'allows the user to sign in via Google OAuth' do
-    mock_google_oauth
+    mock_google_oauth(email: 'test@example.com')
     visit root_path
 
     within("[data-test='nav']") do

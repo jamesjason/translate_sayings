@@ -1,6 +1,6 @@
 # README
 
-![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/jamesjason/translate_sayings/main/coverage/coverage.json)
+[![codecov](https://codecov.io/gh/jamesjason/translate_sayings/branch/main/graph/badge.svg)](https://codecov.io/gh/jamesjason/translate_sayings)
 
 
 This README would normally document whatever steps are necessary to get the

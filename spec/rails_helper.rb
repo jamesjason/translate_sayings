@@ -13,6 +13,8 @@ require 'rspec/rails'
 # Shoulda Matchers configuration
 require 'shoulda/matchers'
 
+require 'warden/test/helpers'
+
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
     with.test_framework :rspec
@@ -84,4 +86,25 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include TranslationTestHelpers
+
+  # Authentication for system tests
+  config.include Warden::Test::Helpers, type: :system
+  config.before(type: :system) do
+    Warden.test_mode!
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:google_oauth2] = nil
+  end
+  config.after(type: :system) do
+    Warden.test_reset!
+    OmniAuth.config.mock_auth[:google_oauth2] = nil
+  end
+
+  # Automatically use Capybara/Selenium for system tests
+  config.before(:each, type: :system) do
+    if ENV['SHOW_BROWSER']
+      driven_by(:selenium_chrome)
+    else
+      driven_by(:selenium_chrome_headless)
+    end
+  end
 end

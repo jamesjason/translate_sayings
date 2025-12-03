@@ -126,10 +126,17 @@ export default class extends Controller {
   }
 
   updateNavigation() {
-    const i = this.currentIndexValue
+    const i = this.currentIndexValue;
+    const total = this.items.length;
 
-    this.prevBtnTarget.disabled = i === 0
-    this.nextBtnTarget.disabled = false
+    if (this.state === "thank_you") {
+      this.prevBtnTarget.disabled = false;
+      this.nextBtnTarget.disabled = true;
+      return;
+    }
+
+    this.prevBtnTarget.disabled = (i === 0);
+    this.nextBtnTarget.disabled = false;
   }
 
   // =============================
@@ -234,16 +241,31 @@ export default class extends Controller {
   }
 
   async goPrev() {
-    if (this.isTransitioning) return
-    this.isTransitioning = true
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
 
-    this.resetVoteStyles()
-    await this.slide(1)
+    const i = this.currentIndexValue;
 
-    this.currentIndexValue--
-    this.render()
+    if (this.state === "thank_you") {
+      this.state = "review";
+      this.completeCardTarget.classList.add("hidden");
+      this.cardTarget.classList.remove("hidden");
+      this.progressWrapperTarget.classList.remove("hidden");
 
-    this.isTransitioning = false
+      this.currentIndexValue = this.items.length - 1;
+      this.render();
+      this.isTransitioning = false;
+      return;
+    }
+
+    if (i > 0) {
+      this.resetVoteStyles();
+      await this.slide(1);
+      this.currentIndexValue--;
+      this.render();
+    }
+
+    this.isTransitioning = false;
   }
 
   slide(direction) {

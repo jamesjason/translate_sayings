@@ -1,0 +1,40 @@
+<div class="mx-auto w-full max-w-5xl">
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+      Admin – Users
+    </h1>
+  </div>
+
+  <div class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm sm:p-6">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <th class="py-2 pr-3">Email</th>
+          <th class="py-2 px-3">Role</th>
+          <th class="py-2 px-3">Created</th>
+          <th class="py-2 pl-3 text-right">Details</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <% @users.each do |user| %>
+          <tr class="hover:bg-slate-50/70">
+            <td class="py-2 pr-3 align-top text-slate-900">
+              <%= user.email %>
+            </td>
+            <td class="py-2 px-3 align-top text-slate-600">
+              <%= user.role %>
+            </td>
+            <td class="py-2 px-3 align-top text-slate-600">
+              <%= user.created_at.to_fs(:short) %>
+            </td>
+            <td class="py-2 pl-3 align-top text-right">
+              <%= link_to "View activity",
+                    admin_user_path(user),
+                    class: "inline-flex items-center rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white shadow-sm hover:bg-slate-800" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

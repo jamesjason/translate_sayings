@@ -108,4 +108,16 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe '#admin?' do
+    it 'returns true when role is admin' do
+      user = build(:user, :admin)
+      expect(user.admin?).to be(true)
+    end
+
+    it 'returns false when role is user' do
+      user = build(:user)
+      expect(user.admin?).to be(false)
+    end
+  end
 end

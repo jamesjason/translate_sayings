@@ -30,4 +30,8 @@ Rails.application.routes.draw do
   resources :translation_reviews, only: [:index] do
     post :vote, on: :collection
   end
+
+  namespace :admin do
+    resources :users, only: %i[index show]
+  end
 end

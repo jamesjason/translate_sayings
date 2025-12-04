@@ -15,6 +15,9 @@ AllCops:
 Rails/StrongParametersExpect:
   Enabled: false
 
+Rails/I18nLocaleTexts:
+  Enabled: false
+
 Layout/LineLength:
   Enabled: true
   Max: 120

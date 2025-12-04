@@ -38,6 +38,10 @@ class User < ApplicationRecord
     )
   end
 
+  def admin?
+    role == ADMIN_ROLE
+  end
+
   private
 
   def normalize_email

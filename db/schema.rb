@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_173346) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_05_195311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -42,7 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_173346) do
     t.string "slug"
     t.text "text", null: false
     t.datetime "updated_at", null: false
-    t.index "lower(text)", name: "index_sayings_on_lower_text_unique", unique: true
+    t.index ["language_id", "text"], name: "index_sayings_on_language_and_text_unique", unique: true
     t.index ["language_id"], name: "index_sayings_on_language_id"
     t.index ["normalized_text"], name: "index_sayings_on_normalized_text", opclass: :gin_trgm_ops, using: :gin
     t.index ["slug"], name: "index_sayings_on_slug"

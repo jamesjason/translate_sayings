@@ -8,13 +8,8 @@ export default class extends Controller {
     this.isProcessing = false
   }
 
-  upvote() {
-    this.submitVote(1)
-  }
-
-  downvote() {
-    this.submitVote(-1)
-  }
+  upvote() { this.submitVote(1) }
+  downvote() { this.submitVote(-1) }
 
   async submitVote(value) {
     if (this.isProcessing) return
@@ -30,19 +25,19 @@ export default class extends Controller {
 
       const data = await response.json()
 
-      // update counts
       this.upTarget.textContent = data.upvotes
       this.downTarget.textContent = data.downvotes
 
-      // update active styling
       this.applyActiveStyle(data.user_vote)
 
-      // animate selected button
-      const circle = value === 1
-        ? this.element.querySelector(".vote-btn-up .vote-circle")
-        : this.element.querySelector(".vote-btn-down .vote-circle")
+      const circle = this.element.querySelector(
+        value === 1
+          ? ".vote-btn-up .vote-circle, .vote-btn-up .vote-circle-sm, .vote-btn-up .vote-circle-xs"
+          : ".vote-btn-down .vote-circle, .vote-btn-down .vote-circle-sm, .vote-btn-down .vote-circle-xs"
+      )
 
-      this.animate(circle)
+      if (circle) this.animate(circle)
+
     } catch (err) {
       console.error("Vote failed:", err)
     } finally {
@@ -51,8 +46,7 @@ export default class extends Controller {
   }
 
   async sendVote(id, vote) {
-    const csrfMeta = document.querySelector("meta[name='csrf-token']");
-    const csrf = csrfMeta ? csrfMeta.content : "";
+    const csrf = document.querySelector("meta[name='csrf-token']")?.content || ""
 
     return fetch("/translation_reviews/vote", {
       method: "POST",
@@ -61,18 +55,25 @@ export default class extends Controller {
         "X-CSRF-Token": csrf
       },
       body: JSON.stringify({ id, vote })
-    });
+    })
   }
+
   applyActiveStyle(vote) {
-    const upCircle = this.element.querySelector(".vote-btn-up .vote-circle")
-    const downCircle = this.element.querySelector(".vote-btn-down .vote-circle")
+    const upCircle = this.element.querySelector(
+      ".vote-btn-up .vote-circle, .vote-btn-up .vote-circle-sm, .vote-btn-up .vote-circle-xs"
+    )
+    const downCircle = this.element.querySelector(
+      ".vote-btn-down .vote-circle, .vote-btn-down .vote-circle-sm, .vote-btn-down .vote-circle-xs"
+    )
+
+    if (!upCircle || !downCircle) return
 
     upCircle.classList.toggle("vote-active-up", vote === 1)
     downCircle.classList.toggle("vote-active-down", vote === -1)
   }
 
   animate(circle) {
-    circle.classList.add("vote-animate")
-    setTimeout(() => circle.classList.remove("vote-animate"), 300)
+    circle.classList.add("vote-pulse")
+    setTimeout(() => circle.classList.remove("vote-pulse"), 300)
   }
 }

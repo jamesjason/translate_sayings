@@ -1,0 +1,76 @@
+<div class="mx-auto max-w-3xl mt-8">
+
+  <div class="relative mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="absolute -top-4 -right-3">
+      <%= language_flag(language: @saying.language) %>
+    </div>
+
+    <h1 class="text-2xl font-semibold text-slate-900 leading-snug text-center" dir="auto">
+      <%= @saying.text %>
+    </h1>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-4">Equivalent Sayings</h2>
+
+  <% @translations.each do |translation| %>
+    <% other = translation.saying_a_id == @saying.id ? translation.saying_b : translation.saying_a %>
+
+    <div
+      class="relative mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4"
+      data-controller="vote"
+      data-vote-id-value="<%= translation.id %>"
+    >
+
+      <div class="absolute -top-4 -right-3">
+        <%= language_flag(language: other.language) %>
+      </div>
+
+      <p class="text-base font-medium text-slate-900 leading-relaxed text-center" dir="auto">
+        <%= other.text %>
+      </p>
+
+      <div class="h-px bg-slate-200"></div>
+
+      <div class="flex flex-col items-center">
+        <p class="text-xs text-slate-500 mb-2">
+          Are these sayings equivalent?
+        </p>
+
+        <div class="flex items-center justify-center gap-6">
+
+          <button data-action="vote#downvote" class="vote-btn-down flex flex-col items-center">
+            <div class="vote-circle-xs <%= 'vote-active-down' if translation.user_vote_value(current_user) == -1 %>">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 6l12 12M18 6l-12 12"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <span data-vote-target="down" class="text-xs text-slate-700 mt-1">
+              <%= translation.downvotes_count %>
+            </span>
+          </button>
+
+          <button data-action="vote#upvote" class="vote-btn-up flex flex-col items-center">
+            <div class="vote-circle-xs <%= 'vote-active-up' if translation.user_vote_value(current_user) == 1 %>">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <span data-vote-target="up" class="text-xs text-slate-700 mt-1">
+              <%= translation.upvotes_count %>
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  <% end %>
+
+</div>

@@ -8,6 +8,8 @@ class Language < ApplicationRecord
   DEFAULT_SOURCE_LANGUAGE = 'en'.freeze
   DEFAULT_TARGET_LANGUAGE = 'fa'.freeze
 
+  has_many :sayings, dependent: :destroy
+
   before_validation :normalize_code
 
   validates :code,

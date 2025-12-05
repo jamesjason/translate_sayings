@@ -21,7 +21,7 @@ Rails.application.routes.draw do
 
   resources :translations, only: [:index]
 
-  resources :sayings, only: [] do
+  resources :sayings, only: [:show], param: :slug do
     collection do
       get :autocomplete
     end
@@ -34,4 +34,6 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users, only: %i[index show]
   end
+
+  get '/browse/:code(/:letter)', to: 'browse#index', as: :browse
 end

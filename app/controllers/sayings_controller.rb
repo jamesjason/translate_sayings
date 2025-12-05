@@ -8,6 +8,16 @@ class SayingsController < ApplicationController
     render json: sayings.map { |saying| { id: saying.id, text: saying.text } }
   end
 
+  def show
+    @saying = Saying.find_canonical_by(slug: params[:slug])
+
+    @translations =
+      SayingTranslation
+      .for_saying(source_saying: @saying)
+      .includes(:translation_votes, :saying_a, :saying_b)
+      .sort_by { |t| -t.accuracy_score }
+  end
+
   private
 
   def autocomplete_params

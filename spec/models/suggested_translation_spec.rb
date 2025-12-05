@@ -37,8 +37,8 @@ RSpec.describe SuggestedTranslation, type: :model do
     let(:en)   { create(:language, code: 'en') }
     let(:fa)   { create(:language, code: 'fa') }
 
-    it 'normalizes whitespace and case on both fields' do
-      st = described_class.create!(
+    it 'normalizes whitespace but preserves original casing' do
+      suggested_translation = described_class.create!(
         user: user,
         source_language: en,
         target_language: fa,
@@ -46,8 +46,8 @@ RSpec.describe SuggestedTranslation, type: :model do
         target_saying_text: '  GOod   DEedS  '
       )
 
-      expect(st.source_saying_text).to eq('actions speak')
-      expect(st.target_saying_text).to eq('good deeds')
+      expect(suggested_translation.source_saying_text).to eq('Actions SPEAK')
+      expect(suggested_translation.target_saying_text).to eq('GOod DEedS')
     end
   end
 

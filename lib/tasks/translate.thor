@@ -282,7 +282,7 @@ class Translate < Thor
 
         unless tgt.empty?
           tgt = tgt.gsub(/\A["'“”‘’]+/, '').gsub(/["'“”‘’]+\z/, '')
-          tgt = tgt.sub(/[.!?…]+$/, '').strip
+          tgt = tgt.sub(/[.…]+$/, '').strip
         end
 
         conf = 1 if conf <= 0

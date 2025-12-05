@@ -32,7 +32,7 @@ RSpec.describe 'User suggests a new translation', type: :system do
     expect(record.source_language).to eq(english)
     expect(record.target_language).to eq(farsi)
 
-    expect(record.source_saying_text).to eq('a stitch in time saves nine')
+    expect(record.source_saying_text).to eq('A stitch in time saves nine')
     expect(record.target_saying_text).to eq('دیر رسیدن بهتر از هرگز نرسیدن است')
 
     expect(record.status).to eq('pending_review')

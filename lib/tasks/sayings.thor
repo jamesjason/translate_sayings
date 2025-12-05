@@ -1,7 +1,7 @@
 require_relative '../../config/environment'
+
 class Sayings < Thor
   desc 'backfill_slugs_for_english_sayings', 'Backfill unique slugs for English sayings only'
-
   def backfill_slugs_for_english_sayings
     say('Backfilling slugs for English sayings...', :green)
 
@@ -64,5 +64,43 @@ class Sayings < Thor
     end
 
     say('Non-English slug backfill complete.', :green)
+  end
+
+  desc 'capitalize_first_letter',
+       'Capitalizes only the first letter of all English sayings'
+  method_option :dry_run, type: :boolean, default: true, desc: 'Preview changes without saving'
+
+  def capitalize_first_letter
+    dry = options[:dry_run]
+
+    english = Language.find_by!(code: 'en')
+    sayings = Saying.where(language: english)
+
+    say "Found #{sayings.count} English sayings.", :yellow
+    say dry ? 'Running in DRY RUN mode — no changes will be saved.' : 'Applying updates...', :cyan
+
+    updated = 0
+
+    sayings.find_each do |saying|
+      next if saying.text.blank?
+
+      original = saying.text
+      fixed = original.sub(/\A([a-z])/) { ::Regexp.last_match(1).upcase }
+
+      next if fixed == original
+
+      say "ID #{saying.id}: \"#{original}\" → \"#{fixed}\"", :blue
+
+      if dry
+        updated += 1
+        next
+      end
+
+      saying.update_columns(text: fixed) # rubocop:disable Rails/SkipsModelValidations
+      updated += 1
+    end
+
+    say dry ? "DRY RUN complete. #{updated} sayings WOULD be updated." : "Done. Updated #{updated} English sayings.",
+        :green
   end
 end

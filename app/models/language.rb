@@ -2,7 +2,13 @@ class Language < ApplicationRecord
   LANGUAGE_CODE_TO_NAME_MAP = {
     'en' => 'English',
     'fa' => 'Persian',
-    'es' => 'Spanish'
+    'es' => 'Spanish',
+    'fr' => 'French',
+    'ar' => 'Arabic',
+    'zh' => 'Chinese',
+    'ja' => 'Japanese',
+    'hi' => 'Hindi',
+    'de' => 'German'
   }.freeze
   SUPPORTED_LANGUAGES = LANGUAGE_CODE_TO_NAME_MAP.keys.freeze
   DEFAULT_SOURCE_LANGUAGE = 'en'.freeze

@@ -1,0 +1,71 @@
+<div class="mx-auto w-full max-w-4xl">
+
+  <header class="mb-8">
+    <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+      Browse Sayings
+    </h1>
+    <p class="mt-2 text-sm text-slate-600">
+      Browse sayings by language
+    </p>
+  </header>
+
+  <nav class="mb-6 flex flex-wrap gap-2">
+    <% @languages.each do |lang| %>
+      <% active = (lang == @language) %>
+
+      <%= link_to lang.name,
+          browse_path(lang.code),
+          class: [
+            "px-3 py-1 rounded-full border text-xs sm:text-sm transition",
+            active ?
+              "bg-slate-900 text-white border-slate-900" :
+              "border-slate-300 text-slate-600 hover:bg-slate-100"
+          ].join(" ") %>
+    <% end %>
+  </nav>
+
+  <!-- Alphabet Navigation (English Only) -->
+  <% if @language.code == 'en' %>
+    <div class="mb-6 flex flex-wrap gap-1">
+      <% @letters.each do |l| %>
+        <% active = (l == @letter) %>
+
+        <%= link_to l,
+            browse_path(@language.code, letter: l),
+            class: [
+              "px-2 py-1 rounded text-xs font-medium transition",
+              active ?
+                "bg-blue-600 text-white" :
+                "text-slate-700 hover:bg-slate-200"
+            ].join(" ") %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <% if @sayings.any? %>
+      <ul class="space-y-3">
+        <% @sayings.each do |s| %>
+          <li>
+            <%= link_to saying_path(s.slug),
+                dir: "auto",
+                class: "block rounded-lg border border-slate-200 p-3 hover:bg-slate-50 transition" do %>
+
+              <span class="font-medium text-slate-800"><%= s.text %></span>
+
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-slate-600">No sayings found.</p>
+    <% end %>
+  </div>
+
+  <% if @sayings.total_pages > 1 %>
+    <div class="mt-8 flex justify-center">
+      <%= paginate @sayings %>
+    </div>
+  <% end %>
+
+</div>

@@ -41,10 +41,28 @@ class Saying < ApplicationRecord
       .limit(10)
   end
 
+  def self.find_canonical_by(slug:)
+    english = Language.find_by!(code: Language::DEFAULT_SOURCE_LANGUAGE)
+
+    canonical = find_by(slug:, language: english)
+    return canonical if canonical
+
+    find_by(slug:)
+  end
+
   def equivalents_in(language:)
     return [] unless language
 
     linked_sayings.select { |saying| saying.language_id == language.id }
+  end
+
+  def to_param
+    slug
+  end
+
+  def linked_sayings
+    (incoming_translations.map(&:saying_a) +
+     outgoing_translations.map(&:saying_b)).uniq
   end
 
   private
@@ -53,10 +71,5 @@ class Saying < ApplicationRecord
     return if text.blank?
 
     self.text = normalize_text_field(text)
-  end
-
-  def linked_sayings
-    (incoming_translations.map(&:saying_a) +
-     outgoing_translations.map(&:saying_b)).uniq
   end
 end

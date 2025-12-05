@@ -136,6 +136,34 @@ RSpec.describe Saying, type: :model do
     end
   end
 
+  describe '.find_canonical_by' do
+    let!(:english) { create(:language) }
+    let!(:persian) { create(:language, :fa) }
+
+    context 'when an English saying exists with the slug' do
+      it 'returns the English saying' do
+        create(:saying, language: persian, slug: 'abc', text: 'سلام دنیا')
+        english_saying = create(:saying, language: english, slug: 'abc', text: 'hello world')
+
+        expect(described_class.find_canonical_by(slug: 'abc')).to eq(english_saying)
+      end
+    end
+
+    context 'when no English saying exists with the slug' do
+      let!(:persian_saying) { create(:saying, language: persian, slug: 'xyz', text: 'سلام') }
+
+      it 'returns the non-English saying' do
+        expect(described_class.find_canonical_by(slug: 'xyz')).to eq(persian_saying)
+      end
+    end
+
+    context 'when no saying exists with the slug' do
+      it 'returns nil' do
+        expect(described_class.find_canonical_by(slug: 'missing')).to be_nil
+      end
+    end
+  end
+
   describe '#equivalents_in' do
     it 'returns all linked sayings in the given language' do
       english = create(:language)

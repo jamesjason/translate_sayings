@@ -1,6 +1,6 @@
-.vote-circle {
-  height: 64px;
-  width: 64px;
+.vote-circle,
+.vote-circle-sm,
+.vote-circle-xs {
   border-radius: 9999px;
   border: 2px solid #cbd5e1;
   background: white;
@@ -9,11 +9,21 @@
   align-items: center;
   justify-content: center;
   transition:
-    transform 0.18s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+    background 0.25s ease,
+    transform 0.20s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.vote-circle {
+  height: 64px;
+  width: 64px;
+}
+
+.vote-circle svg {
+  height: 28px;
+  width: 28px;
 }
 
 .vote-circle-sm {
@@ -26,16 +36,50 @@
   width: 22px;
 }
 
-.vote-btn:hover .vote-circle {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+.vote-circle-xs {
+  height: 26px;
+  width: 26px;
+  border-width: 1px;
 }
 
-.vote-btn-up:hover .vote-circle {
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+.vote-circle-xs svg {
+  height: 14px;
+  width: 14px;
 }
 
-.vote-btn-down:hover .vote-circle {
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+.vote-btn:hover .vote-circle,
+.vote-btn:hover .vote-circle-sm,
+.vote-btn:hover .vote-circle-xs {
+  background: #f8fafc; /* slate-50 */
+  box-shadow: 0 0 10px rgba(0,0,0,0.12);
+}
+
+.vote-btn-up:hover .vote-circle,
+.vote-btn-up:hover .vote-circle-sm,
+.vote-btn-up:hover .vote-circle-xs {
+  box-shadow: 0 0 12px rgba(16,185,129,0.45);
+}
+
+.vote-btn-down:hover .vote-circle,
+.vote-btn-down:hover .vote-circle-sm,
+.vote-btn-down:hover .vote-circle-xs {
+  box-shadow: 0 0 12px rgba(239,68,68,0.45);
+}
+
+.vote-active-up {
+  background: #d1fae5 !important;
+  border-color: #059669 !important;
+  color: #059669 !important;
+  transform: scale(1.12);
+  box-shadow: 0 0 6px rgba(16,185,129,0.55);
+}
+
+.vote-active-down {
+  background: #fee2e2 !important;
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
+  transform: scale(1.12);
+  box-shadow: 0 0 6px rgba(239,68,68,0.5);
 }
 
 .vote-animate {
@@ -43,29 +87,16 @@
 }
 
 @keyframes vote-pop {
-  0% { transform: scale(1); }
-  45% { transform: scale(1.25); }
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.25); }
   100% { transform: scale(1.12); }
 }
 
-.vote-active-up {
-  background-color: #10b981;
-  border-color: #059669;
-  color: white;
-  transform: scale(1.12);
-}
-
-.vote-active-down {
-  background-color: #ef4444;
-  border-color: #dc2626;
-  color: white;
-  transform: scale(1.12);
-}
-
+/* Disable hover effects on touch devices */
 @media (hover: none) {
   .vote-btn:hover .vote-circle,
-  .vote-btn-up:hover .vote-circle,
-  .vote-btn-down:hover .vote-circle {
+  .vote-btn:hover .vote-circle-sm,
+  .vote-btn:hover .vote-circle-xs {
     box-shadow: none !important;
   }
 }

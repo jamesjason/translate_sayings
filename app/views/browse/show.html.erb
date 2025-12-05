@@ -1,0 +1,46 @@
+<div class="mx-auto w-full max-w-4xl">
+
+  <!-- Header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+      Browse sayings in <%= @language.name %>
+    </h1>
+    <p class="mt-2 text-sm text-slate-600 sm:text-base">
+      Explore all sayings in this language, sorted alphabetically.
+    </p>
+  </div>
+
+
+  <!-- Language Switcher -->
+  <div class="mb-8 flex flex-wrap gap-2">
+    <% @languages.each do |lang| %>
+      <%= link_to browse_language_path(lang.code),
+          class: "px-3 py-1.5 rounded-full border text-sm #{lang == @language ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}" do %>
+        <%= lang.name %>
+      <% end %>
+    <% end %>
+  </div>
+
+
+  <!-- Sayings List -->
+  <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+
+    <% if @sayings.any? %>
+      <ul class="divide-y divide-slate-200">
+        <% @sayings.each do |saying| %>
+          <li class="py-3 first:pt-0 last:pb-0">
+            <%= link_to saying_path(saying.slug),
+                  class: "block text-slate-800 hover:text-sky-600 hover:underline text-[15px]" do %>
+              <span dir="auto"><%= saying.text %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+
+    <% else %>
+      <p class="text-sm text-slate-600">No sayings found.</p>
+    <% end %>
+
+  </div>
+
+</div>

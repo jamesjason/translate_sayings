@@ -10,6 +10,16 @@ class PopulateDatabase < Thor
   desc 'sayings',
        'Populate sayings and saying_translations from CSV files in data/saying_translations'
 
+  # --- Helper method: use model’s normalization pipeline exactly ---
+  no_commands do
+    def normalized_for_lookup(raw_text)
+      tmp = Saying.new(text: raw_text)
+      tmp.valid?  # triggers before_validation callbacks
+      tmp.text    # return the final normalized text Rails will try to save
+    end
+  end
+  # ----------------------------------------------------------------
+
   def sayings
     dir = File.join(Dir.pwd, 'data', 'saying_translations')
     unless Dir.exist?(dir)
@@ -29,6 +39,7 @@ class PopulateDatabase < Thor
     files.each do |path|
       basename = File.basename(path)
       match = basename.match(/\A([a-z]+)_to_([a-z]+)\.csv\z/)
+
       unless match
         say "Skipping #{basename} (filename does not match SOURCE_to_TARGET.csv)", :yellow
         next
@@ -51,19 +62,43 @@ class PopulateDatabase < Thor
       links_created   = 0
 
       CSV.foreach(path, headers: true) do |row|
-        src_text = row[source_code].to_s.strip
-        tgt_text = row[target_code].to_s.strip
+        src_text_raw = row[source_code].to_s.strip
+        tgt_text_raw = row[target_code].to_s.strip
 
-        next if src_text.empty? || tgt_text.empty?
+        # Skip if empty or missing translation
+        next if src_text_raw.empty? || tgt_text_raw.empty?
 
-        src_saying = Saying.find_or_create_by!(language_id: source_language.id, text: src_text)
-        sayings_created += 1 if src_saying.previous_changes.key?('id')
+        # Normalize for lookup using model’s real normalization logic
+        src_norm = normalized_for_lookup(src_text_raw)
+        tgt_norm = normalized_for_lookup(tgt_text_raw)
 
-        tgt_saying = Saying.find_or_create_by!(language_id: target_language.id, text: tgt_text)
-        sayings_created += 1 if tgt_saying.previous_changes.key?('id')
+        # --- Source saying ---
+        src_saying = Saying.find_by(language_id: source_language.id, text: src_norm)
+        unless src_saying
+          src_saying = Saying.create!(
+            language_id: source_language.id,
+            text: src_text_raw # model will normalize it correctly
+          )
+          sayings_created += 1
+        end
 
+        # --- Target saying ---
+        tgt_saying = Saying.find_by(language_id: target_language.id, text: tgt_norm)
+        unless tgt_saying
+          tgt_saying = Saying.create!(
+            language_id: target_language.id,
+            text: tgt_text_raw
+          )
+          sayings_created += 1
+        end
+
+        # --- Create SayingTranslation link ---
         a_id, b_id = [src_saying.id, tgt_saying.id].sort
-        link = SayingTranslation.find_or_create_by!(saying_a_id: a_id, saying_b_id: b_id)
+
+        link = SayingTranslation.find_or_create_by!(
+          saying_a_id: a_id,
+          saying_b_id: b_id
+        )
         links_created += 1 if link.previous_changes.key?('id')
       end
 

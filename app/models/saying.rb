@@ -1,6 +1,4 @@
 class Saying < ApplicationRecord
-  include TextNormalizer
-
   MINIMUM_TEXT_LENGTH = 3
   MAXIMUM_TEXT_LENGTH = 200
 
@@ -70,6 +68,6 @@ class Saying < ApplicationRecord
   def normalize_text
     return if text.blank?
 
-    self.text = normalize_text_field(text)
+    self.text = text.to_s.strip.downcase.gsub(/\s+/, ' ')
   end
 end

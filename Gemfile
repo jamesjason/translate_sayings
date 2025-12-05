@@ -22,6 +22,7 @@ gem 'stimulus-rails'
 gem 'tailwindcss-rails'
 gem 'thruster', require: false
 gem 'turbo-rails'
+gem 'twitter_cldr'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
 ###########################################

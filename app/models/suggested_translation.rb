@@ -1,6 +1,4 @@
 class SuggestedTranslation < ApplicationRecord
-  include TextNormalizer
-
   belongs_to :user
   belongs_to :source_language, class_name: 'Language'
   belongs_to :target_language, class_name: 'Language'
@@ -30,7 +28,7 @@ class SuggestedTranslation < ApplicationRecord
   private
 
   def normalize_fields
-    self.source_saying_text = normalize_text_field(source_saying_text)
-    self.target_saying_text = normalize_text_field(target_saying_text)
+    self.source_saying_text = source_saying_text.to_s.strip.downcase.gsub(/\s+/, ' ')
+    self.target_saying_text = target_saying_text.to_s.strip.downcase.gsub(/\s+/, ' ')
   end
 end

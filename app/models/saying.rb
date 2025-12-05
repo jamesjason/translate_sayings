@@ -1,8 +1,8 @@
 class Saying < ApplicationRecord
-  include TextNormalizer
+  MINIMUM_TEXT_LENGTH = 1
+  MAXIMUM_TEXT_LENGTH = 300
 
-  MINIMUM_TEXT_LENGTH = 3
-  MAXIMUM_TEXT_LENGTH = 200
+  include WhitespaceNormalization
 
   belongs_to :language
 
@@ -18,7 +18,7 @@ class Saying < ApplicationRecord
            inverse_of: :saying_b,
            dependent: :destroy
 
-  before_validation :normalize_text
+  before_validation :normalize_text_fields
 
   validates :text,
             presence: true,
@@ -26,18 +26,18 @@ class Saying < ApplicationRecord
               minimum: MINIMUM_TEXT_LENGTH,
               maximum: MAXIMUM_TEXT_LENGTH
             },
-            uniqueness: { case_sensitive: false }
+            uniqueness: { case_sensitive: true, scope: :language_id }
 
   def self.search(language:, term:)
     return none unless language
 
-    normalized_term = term.to_s.strip.downcase
+    normalized_term = TextNormalizer.new(text: term).call
     return none if normalized_term.length < 2
 
     select(:id, :text)
       .where(language:)
-      .where('text ILIKE ?', "%#{normalized_term}%")
-      .order(:text)
+      .where('normalized_text ILIKE ?', "%#{normalized_term}%")
+      .order(:normalized_text)
       .limit(10)
   end
 
@@ -67,9 +67,11 @@ class Saying < ApplicationRecord
 
   private
 
-  def normalize_text
+  def normalize_text_fields
     return if text.blank?
 
-    self.text = normalize_text_field(text)
+    whitespace_normalized_text = normalize_whitespace(string: text)
+    self.text = whitespace_normalized_text
+    self.normalized_text = TextNormalizer.new(text: whitespace_normalized_text).call
   end
 end

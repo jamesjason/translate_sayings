@@ -1,5 +1,5 @@
 class SuggestedTranslation < ApplicationRecord
-  include TextNormalizer
+  include WhitespaceNormalization
 
   belongs_to :user
   belongs_to :source_language, class_name: 'Language'
@@ -30,7 +30,7 @@ class SuggestedTranslation < ApplicationRecord
   private
 
   def normalize_fields
-    self.source_saying_text = normalize_text_field(source_saying_text)
-    self.target_saying_text = normalize_text_field(target_saying_text)
+    self.source_saying_text = normalize_whitespace(string: source_saying_text)
+    self.target_saying_text = normalize_whitespace(string: target_saying_text)
   end
 end

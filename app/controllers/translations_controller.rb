@@ -6,7 +6,7 @@ class TranslationsController < ApplicationController
 
     @source_saying = Saying.find_by(
       language: source_language,
-      text: @normalized_query
+      normalized_text: @normalized_query
     )
 
     @translations = fetch_translations
@@ -21,7 +21,7 @@ class TranslationsController < ApplicationController
   def set_query
     raw = translations_params[:q].to_s.strip
     @query = raw
-    @normalized_query = raw.downcase.gsub(/\s+/, ' ')
+    @normalized_query = TextNormalizer.new(text: raw).call
   end
 
   def set_languages

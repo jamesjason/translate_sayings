@@ -53,7 +53,10 @@ class SuggestedTranslationsController < ApplicationController
 
   def target_language
     @target_language ||= begin
-      code = params[:target_language].presence || Language::DEFAULT_TARGET_LANGUAGE
+      cookie_code = cookies[:ts_target_language].presence
+      param_code  = params[:target_language].presence
+
+      code = param_code || cookie_code || Language::DEFAULT_TARGET_LANGUAGE
       Language.find_by(code:)
     end
   end

@@ -38,28 +38,19 @@ RSpec.describe Saying, type: :model do
     let(:language) { create(:language) }
 
     it 'strips leading and trailing spaces' do
-      saying = described_class.create!(
-        language: language,
-        text: '  Hello world  '
-      )
+      saying = create(:saying, language:, text: '  Hello world  ')
 
       expect(saying.text).to eq('Hello world')
     end
 
     it 'collapses multiple internal spaces into a single space' do
-      saying = described_class.create!(
-        language: language,
-        text: 'Hello    world   from  Ruby'
-      )
+      saying = create(:saying, language:, text: 'Hello    world   from  Ruby')
 
       expect(saying.text).to eq('Hello world from Ruby')
     end
 
     it 'applies normalization before uniqueness validation' do
-      described_class.create!(
-        language: language,
-        text: '  Hello   world '
-      )
+      create(:saying, language:, text: '  Hello   world ')
 
       dup = described_class.new(
         language: language,
@@ -71,10 +62,7 @@ RSpec.describe Saying, type: :model do
     end
 
     it 'computes normalized_text using the full TextNormalizer' do
-      saying = described_class.create!(
-        language: language,
-        text: '  Hélló   WÖRLD  '
-      )
+      saying = create(:saying, language:, text: '  Hélló   WÖRLD  ')
 
       expect(saying.normalized_text).to eq(
         TextNormalizer.new(text: '  Hélló   WÖRLD  ').call

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_195311) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_024930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -39,7 +39,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_195311) do
     t.datetime "created_at", null: false
     t.bigint "language_id", null: false
     t.text "normalized_text", null: false
-    t.string "slug"
+    t.string "slug", null: false
     t.text "text", null: false
     t.datetime "updated_at", null: false
     t.index ["language_id", "text"], name: "index_sayings_on_language_and_text_unique", unique: true

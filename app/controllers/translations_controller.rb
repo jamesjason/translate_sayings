@@ -1,5 +1,6 @@
 class TranslationsController < ApplicationController
   before_action :set_query, :set_languages
+  before_action :set_translations_meta_tags, only: [:index]
 
   def index
     return @translations = [] if @query.blank?
@@ -13,6 +14,28 @@ class TranslationsController < ApplicationController
   end
 
   private
+
+  def set_translations_meta_tags
+    set_meta_tags(
+      title: 'Translate Sayings — Find Equivalent Sayings Across Languages',
+      description: 'TranslateSayings lets you search for a saying in one language and find the closest matching ' \
+                   'saying in another.',
+      keywords: 'translate sayings, proverbs, multilingual proverbs, equivalent sayings, proverb translator, idioms',
+      canonical: root_url,
+      og: {
+        title: 'Translate Sayings',
+        description: 'Find equivalent sayings across languages.',
+        type: 'website',
+        url: root_url,
+        image: view_context.image_url('logo.png')
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Translate Sayings',
+        description: 'Find equivalent sayings across languages.'
+      }
+    )
+  end
 
   def translations_params
     params.permit(:source_language, :target_language, :q)

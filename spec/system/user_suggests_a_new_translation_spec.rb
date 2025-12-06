@@ -4,11 +4,15 @@ RSpec.describe 'User suggests a new translation', type: :system do
   it 'allows a user to suggest a new translation' do
     user = create(:user)
     login_as(user, scope: :user)
-    english, farsi = create_default_languages
+    create_default_languages
+    english, farsi = Language.where(code: %w[en fa]).index_by(&:code).values_at('en', 'fa')
 
     visit contribute_path
 
     expect(page).to have_content('Add a New Translation')
+
+    find("[data-language-swap-target='targetLabel']").click
+    find("[data-code='fa']").click
 
     fill_in 'suggested_translation[source_saying_text]',
             with: 'A stitch in time saves nine'

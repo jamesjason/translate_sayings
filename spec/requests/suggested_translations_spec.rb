@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'SuggestedTranslations', type: :request do
-  let!(:english) { create(:language, code: 'en') }
-  let!(:persian) { create(:language, code: 'fa') }
+  before do
+    create_default_languages
+  end
 
   describe 'GET /contribute' do
     it 'returns OK' do
@@ -22,7 +23,7 @@ RSpec.describe 'SuggestedTranslations', type: :request do
       expect(response.body).to include(%(name="suggested_translation[source_language_code]"))
       expect(response.body).to include(%(value="en"))
       expect(response.body).to include(%(name="suggested_translation[target_language_code]"))
-      expect(response.body).to include(%(value="fa"))
+      expect(response.body).to include(%(value="es"))
       expect(response.body).to include(%(name="suggested_translation[source_saying_text]"))
       expect(response.body).to include(%(name="suggested_translation[target_saying_text]"))
 
@@ -54,6 +55,8 @@ RSpec.describe 'SuggestedTranslations', type: :request do
       before { sign_in user }
 
       it 'creates a suggested translation' do
+        english, persian = Language.where(code: %w[en fa]).index_by(&:code).values_at('en', 'fa')
+
         expect do
           post suggested_translations_path, params: valid_params
         end.to change(SuggestedTranslation, :count).by(1)

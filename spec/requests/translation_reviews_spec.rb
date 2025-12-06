@@ -1,8 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe 'TranslationReviews', type: :request do
-  let!(:english) { create(:language) }
-  let!(:farsi)   { create(:language, :fa) }
+  let!(:languages) do
+    create_default_languages
+    Language.where(code: %w[en fa])
+            .index_by(&:code)
+            .values_at('en', 'fa')
+  end
+
+  let(:english) { languages[0] }
+  let(:farsi)   { languages[1] }
 
   describe 'GET /translation_reviews' do
     it 'returns correctly structured JSON with all required fields' do

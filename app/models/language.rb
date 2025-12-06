@@ -12,7 +12,7 @@ class Language < ApplicationRecord
   }.freeze
   SUPPORTED_LANGUAGES = LANGUAGE_CODE_TO_NAME_MAP.keys.freeze
   DEFAULT_SOURCE_LANGUAGE = 'en'.freeze
-  DEFAULT_TARGET_LANGUAGE = 'fa'.freeze
+  DEFAULT_TARGET_LANGUAGE = 'es'.freeze
 
   has_many :sayings, dependent: :destroy
 

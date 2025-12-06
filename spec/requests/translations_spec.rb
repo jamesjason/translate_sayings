@@ -1,8 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe 'TranslationsController', type: :request do
-  let!(:english) { create(:language) }
-  let!(:farsi)   { create(:language, :fa) }
+  let!(:languages) do
+    create_default_languages
+    Language.where(code: %w[en fa])
+            .index_by(&:code)
+            .values_at('en', 'fa')
+  end
+
+  let(:english) { languages[0] }
+  let(:farsi)   { languages[1] }
 
   describe 'GET /translations' do
     context 'when the query matches an existing saying' do
@@ -22,7 +29,7 @@ RSpec.describe 'TranslationsController', type: :request do
       end
 
       it 'returns the source saying and sorts translations by accuracy_score descending' do
-        get translations_path, params: { q: '  HELLO   world  ' }
+        get translations_path, params: { q: '  HELLO   world  ', target_language: farsi.code }
 
         translations = assigns(:translations)
         accuracy_scores = translations.map(&:accuracy_score)
@@ -39,8 +46,8 @@ RSpec.describe 'TranslationsController', type: :request do
       it 'returns an empty translation list' do
         get translations_path, params: {
           q: 'hello',
-          source_language: 'en',
-          target_language: 'fa'
+          source_language: english.code,
+          target_language: farsi.code
         }
 
         expect(response).to have_http_status(:ok)
@@ -63,8 +70,8 @@ RSpec.describe 'TranslationsController', type: :request do
       it 'uses values from params when provided' do
         get translations_path, params: {
           q: 'test',
-          source_language: 'fa',
-          target_language: 'en'
+          source_language: farsi.code,
+          target_language: english.code
         }
 
         expect(response).to have_http_status(:ok)
@@ -107,8 +114,8 @@ RSpec.describe 'TranslationsController', type: :request do
 
         get translations_path, params: {
           q: 'hello',
-          source_language: 'en',
-          target_language: 'fa'
+          source_language: english.code,
+          target_language: farsi.code
         }
 
         expect(response).to have_http_status(:ok)

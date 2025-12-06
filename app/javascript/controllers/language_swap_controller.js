@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import LanguagePreference from "services/language_preference"
 
 export default class extends Controller {
   static targets = [
@@ -13,6 +14,22 @@ export default class extends Controller {
   connect() {
     this._outsideClick = this.handleClickOutside.bind(this);
     document.addEventListener("click", this._outsideClick);
+
+    const saved = LanguagePreference.read();
+    if (saved) {
+      const code = saved;
+      const option = this.targetMenuTarget.querySelector(`[data-code="${code}"]`);
+      if (option) {
+        const name = option.dataset.name;
+
+        this.targetInputTarget.value = code;
+
+        const span = this.targetLabelTarget.querySelector("span");
+        if (span) span.textContent = name;
+
+        this.updateMenuSelection(this.targetMenuTarget, code);
+      }
+    }
   }
 
   disconnect() {
@@ -74,6 +91,9 @@ export default class extends Controller {
       menu: this.targetMenuTarget,
       dispatchName: "ts:target-language-changed"
     });
+
+    const code = event.currentTarget.dataset.code;
+    LanguagePreference.write(code);
   }
 
   applySelection({ event, input, label, menu, dispatchName }) {
@@ -120,6 +140,8 @@ export default class extends Controller {
         detail: { code: sourceCode, name: sourceName }
       })
     );
+
+    LanguagePreference.write(sourceCode);
 
     this.closeMenus();
   }

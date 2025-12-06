@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import LanguagePreference from "services/language_preference"
+import VoteService from "services/vote_service"
 
 export default class extends Controller {
   static targets = [
@@ -25,6 +27,24 @@ export default class extends Controller {
 
     this.showStart()
     document.addEventListener("click", this.closeMenus)
+
+    const saved = LanguagePreference.read()
+    if (saved) {
+      const code = saved
+      const option = this.languageBMenuTarget.querySelector(`[data-code="${code}"]`)
+      if (option) {
+        const name = option.dataset.name
+        this.languageBInputTarget.value = code
+        this.languageBLabelTarget.querySelector("span").textContent = name
+
+        this.languageBMenuTarget.querySelectorAll("[role='option']").forEach((o) => {
+          const selected = o.dataset.code === code
+          o.setAttribute("aria-selected", selected)
+          o.classList.toggle("bg-slate-50", selected)
+          o.querySelector("[data-role='check']").classList.toggle("hidden", !selected)
+        })
+      }
+    }
   }
 
   disconnect() {
@@ -151,7 +171,9 @@ export default class extends Controller {
     this.disableVoting()
 
     try {
-      const data = await this.sendVote(item.id, value)
+      const data = await VoteService.submit({ id: item.id, value })
+
+      if (!data) throw new Error("VoteService returned null")
 
       item.upvotes = data.upvotes
       item.downvotes = data.downvotes
@@ -169,24 +191,6 @@ export default class extends Controller {
       console.error("Vote failed:", err)
       this.enableVoting()
     }
-  }
-
-  async sendVote(id, vote) {
-    const csrfMeta = document.querySelector("meta[name='csrf-token']");
-    const csrf = csrfMeta ? csrfMeta.content : "";
-
-    const response = await fetch("/translation_reviews/vote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
-      body: JSON.stringify({ id, vote })
-    })
-
-    if (response.redirected || response.status === 401) {
-      window.location = "/users/sign_in"
-      throw new Error("Redirect to login")
-    }
-
-    return response.json()
   }
 
   resetVoteStyles() {
@@ -334,6 +338,10 @@ export default class extends Controller {
     })
 
     menu.classList.add("hidden")
+
+    if (which === "B") {
+      LanguagePreference.write(code)
+    }
   }
 
   returnToLanguageSelection() {

@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe 'User votes on translation results', type: :system do
   it 'sorts results by votes after refresh' do
     login_as(create(:user), scope: :user)
-    english, persian = create_default_languages
+    create_default_languages
+    english, persian = Language.where(code: %w[en fa]).index_by(&:code).values_at('en', 'fa')
     source_saying = create(:saying, language: english, text: 'better late than never')
     create_translation(
       language1: english,
@@ -21,6 +22,9 @@ RSpec.describe 'User votes on translation results', type: :system do
     visit root_path
 
     expect(page).to have_field('translation_query', wait: 5)
+
+    find("[data-language-swap-target='targetLabel']").click
+    find("[data-code='fa']").click
 
     within("form[action='#{translations_path}']") do
       fill_in 'translation_query', with: 'better late'

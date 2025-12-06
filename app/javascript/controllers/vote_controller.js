@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import VoteService from "services/vote_service"
 
 export default class extends Controller {
   static values = { id: Number }
@@ -16,14 +17,9 @@ export default class extends Controller {
     this.isProcessing = true
 
     try {
-      const response = await this.sendVote(this.idValue, value)
+      const data = await VoteService.submit({ id: this.idValue, value })
 
-      if (response.redirected || response.status === 401) {
-        window.location = "/users/sign_in"
-        return
-      }
-
-      const data = await response.json()
+      if (!data) return
 
       this.upTarget.textContent = data.upvotes
       this.downTarget.textContent = data.downvotes
@@ -43,19 +39,6 @@ export default class extends Controller {
     } finally {
       this.isProcessing = false
     }
-  }
-
-  async sendVote(id, vote) {
-    const csrf = document.querySelector("meta[name='csrf-token']")?.content || ""
-
-    return fetch("/translation_reviews/vote", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": csrf
-      },
-      body: JSON.stringify({ id, vote })
-    })
   }
 
   applyActiveStyle(vote) {

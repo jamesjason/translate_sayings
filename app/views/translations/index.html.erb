@@ -122,7 +122,7 @@
 
               <p class="text-xs text-slate-500 text-center mb-3">Are these sayings equivalent?</p>
 
-              <!-- Voting row (using vote-circle-sm now) -->
+              <!-- Voting row -->
               <div class="flex items-center justify-center gap-14 pt-2">
 
                 <!-- Downvote -->
@@ -177,11 +177,29 @@
     </section>
 
   <% elsif @query.present? %>
-    <section aria-live="polite">
-      <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm break-words">
-        No saying found matching “<%= @query %>”.
+    <section aria-live="polite" class="mt-8">
+      <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-5 text-sm shadow-sm space-y-4">
+
+        <p class="text-amber-800 break-words">
+          No saying found matching “<%= @query %>”.
+        </p>
+
+        <div class="flex justify-end">
+          <a
+            href="<%= contribute_path(
+                    source_language: @source_language.code,
+                    q: @query
+                  ) %>"
+            class="inline-flex items-center gap-1.5 rounded-full bg-[rgb(26,115,232)] px-4 py-2
+                   text-sm font-medium text-white shadow-sm hover:brightness-90 hover:shadow-md
+                   focus-visible:ring-2 focus-visible:ring-slate-900/20
+                   focus-visible:ring-offset-2 focus-visible:ring-offset-amber-50"
+          >
+            Add translation
+          </a>
+        </div>
+
       </div>
     </section>
   <% end %>
-
 </div>

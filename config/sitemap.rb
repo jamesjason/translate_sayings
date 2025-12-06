@@ -1,5 +1,7 @@
 SitemapGenerator::Sitemap.default_host = 'https://translatesayings.com'
 
+SitemapGenerator::Sitemap.compress = false
+
 SitemapGenerator::Sitemap.create do
   add contribute_path, changefreq: 'monthly', priority: 0.5
 

@@ -9,6 +9,9 @@ RSpec.describe 'User reviews existing translations', type: :system do
     create_sample_translations
 
     visit contribute_path
+    find("[data-translation-review-target='languageBLabel']").click
+    find("[data-code='fa']", text: 'Persian').click
+
     click_button 'Start Reviewing'
 
     3.times do

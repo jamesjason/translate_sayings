@@ -16,15 +16,15 @@ module TranslationTestHelpers
   end
 
   def create_default_languages
-    english = Language.find_by(code: 'en') || create(:language)
-    persian = Language.find_by(code: 'fa') || create(:language, :fa)
-
-    [english, persian]
+    Language::SUPPORTED_LANGUAGES.each do |code|
+      Language.find_by(code:) || create(:language, code:, name: Language.name_for(code:))
+    end
   end
 
   def create_sample_translations
-    english, persian = create_default_languages
-    spanish = create(:language, :es)
+    create_default_languages
+    english, persian, spanish =
+      Language.where(code: %w[en fa es]).index_by(&:code).values_at('en', 'fa', 'es')
 
     create_translation(
       language1: english,

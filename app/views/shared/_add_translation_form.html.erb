@@ -27,6 +27,7 @@
 
     <%= f.text_field :source_saying_text,
           required: true,
+          value: suggested_translation.source_saying_text,
           minlength: Saying::MINIMUM_TEXT_LENGTH,
           maxlength: Saying::MAXIMUM_TEXT_LENGTH,
           autocomplete: "off",

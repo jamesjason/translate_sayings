@@ -4,7 +4,11 @@ class SuggestedTranslationsController < ApplicationController
   def new
     store_location_for(:user, request.fullpath)
 
-    @suggested_translation = SuggestedTranslation.new(source_language:, target_language:)
+    @suggested_translation = SuggestedTranslation.new(
+      source_language:,
+      target_language:,
+      source_saying_text: params[:q].presence
+    )
   end
 
   def create

@@ -1,5 +1,6 @@
 class BrowseController < ApplicationController
   before_action :set_language, :set_letter
+  before_action :set_browse_meta_tags, only: [:index]
 
   ALPHABET = ('A'..'Z').to_a.freeze
 
@@ -29,7 +30,6 @@ class BrowseController < ApplicationController
 
   def filtered_sayings
     scope = @language.sayings
-
     return scope unless english_with_letter?
 
     scope.where('text ILIKE ?', "#{@letter}%")
@@ -37,5 +37,49 @@ class BrowseController < ApplicationController
 
   def english_with_letter?
     @language.code == 'en' && @letter.present?
+  end
+
+  def set_browse_meta_tags
+    page_num = browse_params[:page].presence&.to_i
+    is_paginated = page_num && page_num > 1
+
+    if @letter.present?
+      base_title = "#{@language.name} Sayings Starting With #{@letter}"
+      base_desc  = "Discover #{@language.name} sayings and proverbs beginning with #{@letter}. Browse 50 per page."
+
+    else
+      base_title = "Browse #{@language.name} Sayings — A–Z Collection"
+      base_desc  = "Explore a curated list of #{@language.name} sayings and proverbs. Browse all " \
+                   'sayings alphabetically.'
+    end
+
+    if is_paginated
+      base_title = "#{base_title} (Page #{page_num})"
+      base_desc  = "#{base_desc} Page #{page_num}."
+    end
+
+    set_meta_tags(
+      title: base_title,
+      description: base_desc,
+      keywords: [
+        "#{@language.name} sayings",
+        "#{@language.name} proverbs",
+        'browse sayings',
+        'alphabetical sayings'
+      ].join(', '),
+      canonical: request.original_url,
+      og: {
+        title: base_title,
+        description: base_desc,
+        type: 'website',
+        url: request.original_url,
+        image: view_context.image_url('logo.png')
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: base_title,
+        description: base_desc
+      }
+    )
   end
 end

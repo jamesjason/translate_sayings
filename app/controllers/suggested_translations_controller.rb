@@ -1,5 +1,6 @@
 class SuggestedTranslationsController < ApplicationController
   before_action :authenticate_user!, except: [:new]
+  before_action :set_contribute_page_meta_tags, only: [:new]
 
   def new
     store_location_for(:user, request.fullpath)
@@ -67,5 +68,27 @@ class SuggestedTranslationsController < ApplicationController
 
   def language_id_from(code:)
     Language.find_by(code: code)&.id
+  end
+
+  def set_contribute_page_meta_tags
+    set_meta_tags(
+      title: 'Contribute Translations to Translate Sayings',
+      description: 'Suggest new proverb translations or review existing ones to help grow the multilingual ' \
+                   'proverb dataset.',
+      keywords: 'contribute translations, add proverb, review sayings, multilingual proverbs',
+      canonical: request.original_url,
+      og: {
+        title: 'Contribute Translations to Translate Sayings',
+        description: 'Suggest or review translations to improve the proverb dataset.',
+        type: 'website',
+        url: request.original_url,
+        image: view_context.image_url('logo.png')
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'Contribute to Translate Sayings',
+        description: 'Suggest or review translations.'
+      }
+    )
   end
 end
